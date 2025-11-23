@@ -1,0 +1,11 @@
+fastapi==0.95.2
+uvicorn[standard]==0.22.0
+streamlit==1.26.0
+pydantic==1.10.12
+requests==2.31.0
+python-dotenv==1.1.0
+#chromadb==0.4.8   # or your chosen vector DB client
+sentence-transformers==2.2.2
+sympy==1.12
+langchain==0.1.0  # optional helper (pin to compatible version) OR llama-index
+faiss-cpu==1.7.4  # or faiss-gpu if you have GPUs

@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+env/
+venv/
+.ai-tutor/
+AI-tutor/
+*.env
+
+# Dataset / PDFs / Embeddings
+data/
+faiss_db/
+rag_db/
+*.pdf
+
+# Windows junk
+Thumbs.db
+desktop.ini
+
+# Video files
+*.mp4
+Video Presentation/
+
+# Logs
+issues.txt
+responses.txt
+*.log
+
+# Streamlit cache
+.streamlit/
+
+# VSCode
+.vscode/
+
+responses.txt
+hugging-face.txt
+issues.txt
