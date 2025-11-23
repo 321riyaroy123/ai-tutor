@@ -1,6 +1,6 @@
-# AI Tutor — Hackathon Week 1
+# AI Tutor
 
-## Goal (Week 1)
+## Goal 
 - Design system architecture
 - Initialize repository and CI
 - Collect STEM PDFs (OpenStax) and prepare `data/` folder
@@ -19,4 +19,5 @@
 1. Create virtual env: `python -m venv venv && source venv/bin/activate`
 2. `pip install -r requirements.txt`
 3. See `api/README.md` and `ui/README.md` for run instructions.
+
 
