@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Tutor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    window.MathJax = {
+    tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]},
+    svg: {fontCache: 'global'}
+    };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+<div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-2xl">
+
+  <h1 class="text-2xl font-bold mb-4 text-center">
+    AI Tutor
+  </h1>
+
+  <textarea
+    id="question"
+    placeholder="Ask a question..."
+    class="w-full p-3 border rounded-lg mb-4"
+    rows="3"
+  ></textarea>
+
+  <select id="level" class="w-full p-3 border rounded-lg mb-4">
+    <option value="beginner">Beginner</option>
+    <option value="intermediate" selected>Intermediate</option>
+    <option value="advanced">Advanced</option>
+  </select>
+
+  <button
+    onclick="askQuestion()"
+    class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
+  >
+    Ask Tutor
+  </button>
+
+  <div id="result" class="mt-6 hidden">
+    <h2 class="font-semibold mb-2">Answer:</h2>
+    <pre id="answer" class="whitespace-pre-wrap text-sm"></pre>
+
+    <div class="mt-4 text-xs text-gray-600">
+      <p><strong>Model:</strong> <span id="model"></span></p>
+      <p><strong>Confidence:</strong> <span id="confidence"></span></p>
+      <p><strong>Latency:</strong> <span id="latency"></span> seconds</p>
+      <p><strong>Source Pages:</strong> <span id="pages"></span></p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+async function askQuestion() {
+  const question = document.getElementById("question").value;
+  const level = document.getElementById("level").value;
+
+  const response = await fetch("http://127.0.0.1:8000/ask", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      user_id: "riya",
+      question: question,
+      student_level: level
+    })
+  });
+
+  const data = await response.json();
+
+    document.getElementById("answer").innerHTML = data.answer;
+    MathJax.typeset();
+  document.getElementById("model").innerText = data.model_used;
+  document.getElementById("confidence").innerText = data.confidence.toFixed(3);
+  document.getElementById("latency").innerText = data.latency_seconds;
+  document.getElementById("pages").innerText = data.pages.length > 0 ? data.pages.join(", ") : "N/A";
+  document.getElementById("result").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>

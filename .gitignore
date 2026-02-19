@@ -11,6 +11,9 @@ AI-tutor/
 
 # Dataset / PDFs / Embeddings
 data/
+models/
+logs/
+embeddings/
 faiss_db/
 rag_db/
 *.pdf
@@ -38,3 +41,5 @@ responses.txt
 hugging-face.txt
 issues.txt
 start.txt
+
+.env

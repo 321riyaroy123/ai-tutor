@@ -1,0 +1,14 @@
+[
+  {
+    "question": "State Newton's Second Law",
+    "expected_keywords": ["force", "mass", "acceleration", "F = ma"]
+  },
+  {
+    "question": "Define derivative",
+    "expected_keywords": ["rate of change", "limit", "slope"]
+  },
+  {
+    "question": "Explain photosynthesis",
+    "expected_keywords": ["chlorophyll"]
+  }
+]
