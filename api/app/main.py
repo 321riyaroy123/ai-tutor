@@ -106,7 +106,13 @@ math_retriever = SubjectRetriever("math")
 # Topic Embedding Model (cached once)
 # ---------------------------------
 try:
-    topic_embedding_model = SentenceTransformer("BAAI/bge-base-en-v1.5")
+    topic_embedding_model = None
+    
+    def get_topic_model():
+        global topic_embedding_model
+        if topic_embedding_model is None:
+            topic_embedding_model = SentenceTransformer("BAAI/bge-base-en-v1.5")
+        return topic_embedding_model
 except Exception:
     topic_embedding_model = None  # Fail-safe fallback
 
@@ -219,6 +225,7 @@ def _initialize_topic_embeddings():
 
     for topic, subject in TOPIC_TAXONOMY:
         if topic not in _TOPIC_EMBED_CACHE[subject]:
+            topic_embedding_model = get_topic_model()
             emb = topic_embedding_model.encode(
                 topic,
                 normalize_embeddings=True
@@ -279,6 +286,7 @@ def _semantic_topic_match(
         return []
 
     try:
+        topic_embedding_model = get_topic_model()
         query_emb = topic_embedding_model.encode(
             text,
             normalize_embeddings=True
