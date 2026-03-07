@@ -18,10 +18,6 @@ export const defaultAnalytics: AnalyticsData = {
   lastUpdated: null,
 }
 
-interface Props {
-  data?: AnalyticsData
-}
-
 function StatRow({ label, value, delay=0 }: { label:string; value:string; delay?:number }) {
   return (
     <motion.div initial={{ opacity:0, x:8 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.3, delay }} style={{ marginBottom:"0.85rem" }}>
