@@ -142,8 +142,7 @@ function TagList({ items, color }: { items: string[]; color: string }) {
 }
 
 function TopicPieChart({
-  topicFrequency,
-  accentColor,
+  topicFrequency
 }: {
   topicFrequency: Record<string, number>
   accentColor: string
