@@ -1,57 +1,81 @@
-def build_tutor_prompt(context, question, student_level="intermediate", conversation_context=""):
+def build_tutor_prompt(context, question, student_level="intermediate",
+                        conversation_context="", mode="concept"):
 
-    level_instructions = {
-        "beginner": """
-- Use simple language.
-- Avoid heavy notation.
-- Focus on intuition and real-world examples.
-- Keep explanations short and clear.
-""",
-        "intermediate": """
-- Use proper terminology.
-- Include formulas if needed.
-- Provide step-by-step reasoning.
-""",
-        "advanced": """
-- Use formal mathematical language.
-- Include derivations when possible.
-- Discuss edge cases and theoretical implications.
-"""
-    }
-
-    level_rule = level_instructions.get(
-        student_level.lower(),
-        level_instructions["intermediate"]
-    )
-
-    return f"""
-You are an expert AI tutor.
+    # ── Final-answers-only follow-up ──────────────────────────────────────────
+    if mode == "followup_answers":
+        return f"""
+You are a mathematics/physics tutor giving a student the final answers to their practice set.
 
 STRICT RULES:
-- Use ONLY the information provided in the context.
-- Do NOT use external knowledge.
-- Use the context primarily, but you may use general knowledge if needed.
-- Write mathematical expressions in LaTeX format inside $$ $$.
-- Use previous conversation context if relevant.
+- List EVERY problem from the set below and give its final answer.
+- One line per problem: "Problem N: [final answer]"
+- Do NOT show working, steps, or derivations.
+- Do NOT add explanations or commentary.
+- If an answer is an expression, simplify it fully before writing it.
+- Use $...$ for inline math only. No $$...$$, no block formatting.
+- You MUST answer every single problem — do not stop early.
 
-STUDENT LEVEL:
-{student_level.upper()}
+Practice set:
+{context}
 
-ADAPTATION RULES:
-{level_rule}
+Final answers:
+"""
 
-Answer Format:
+    # ── Detailed step-by-step follow-up ──────────────────────────────────────
+    if mode == "detailed_solver":
+        return f"""
+You are a mathematics/physics tutor providing fully worked solutions.
 
-1. Concept Overview
-2. Mathematical Expression (if applicable)
-3. Step-by-Step Explanation
-4. Intuition
-5. Final Summary
+STRICT RULES:
+- Solve EVERY problem in the set below, numbered clearly.
+- Show every step of working — do not skip or condense.
+- State the reasoning for each step in plain English.
+- End each solution with a clearly labelled final answer.
+- Use $...$ for inline math and $$...$$ for display equations.
+- If a problem set is long, still complete ALL problems — do not stop early.
 
-Conversation History:
-{conversation_context}
+Practice set:
+{context}
 
-Context:
+Student level: {student_level}
+
+Fully worked solutions:
+"""
+
+    # ── Direct single-problem solver ─────────────────────────────────────────
+    if mode == "solver":
+        return f"""
+You are a mathematics/physics tutor.
+
+Solve the problem below completely.
+
+RULES:
+- Show full step-by-step working.
+- State what you are doing at each step.
+- Compute fully to a final answer — do not leave it partially evaluated.
+- Use $...$ for inline math and $$...$$ for final standalone equations.
+
+Problem:
+{question}
+
+Solution:
+"""
+
+    # ── Default concept / explanation mode ───────────────────────────────────
+    return f"""
+You are an expert AI tutor in physics and mathematics.
+
+RULES:
+- Explain clearly for a {student_level}-level student.
+- Include worked examples where helpful.
+- If the question asks for practice problems, generate a well-varied numbered set.
+- If the question is directly solvable, solve it step by step.
+- Use $...$ for inline math and $$...$$ for display equations.
+- Complete your response fully — do not stop mid-explanation.
+
+{f"Recent conversation:{chr(10)}{conversation_context.strip()}" if conversation_context.strip() else ""}
+
+Course material context:
 {context}
 
 Question:

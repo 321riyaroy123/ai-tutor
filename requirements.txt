@@ -2,16 +2,26 @@ fastapi==0.109.0
 uvicorn==0.27.0
 streamlit==1.26.0
 pydantic==2.5.3
+pydantic-settings
 requests==2.31.0
 python-dotenv==1.1.0
-#chromadb==0.4.8   # or your chosen vector DB client
+chromadb==0.4.22
 sentence-transformers==2.3.1
 sympy==1.12
 langchain==0.1.4
-faiss-cpu==1.7.4  # or faiss-gpu if you have GPUs
+faiss-cpu==1.7.4
 pypdf==4.0.1
 tiktoken
-
 langchain-core==0.1.15
 langchain-text-splitters==0.0.1
-chromadb==0.4.22
+google-generativeai
+python-jose[cryptography]
+passlib[bcrypt]
+motor
+numpy
+pdf2image
+pdfplumber
+pytesseract
+PyMuPDF
+torch
+transformers

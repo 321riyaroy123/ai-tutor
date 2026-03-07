@@ -1,0 +1,7 @@
+{
+    "name": "ai-tutor-vercel",
+    "version": "1.0.0",
+    "scripts": {
+        "build": "cd ai-tutor-frontend && npm install && npm run build"
+    }
+}
