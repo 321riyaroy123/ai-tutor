@@ -9,7 +9,7 @@ chromadb==0.4.22
 sentence-transformers==2.3.1
 sympy==1.12
 langchain==0.1.4
-faiss-cpu>=1.7.4
+faiss-cpu==1.8.0
 pypdf==4.0.1
 tiktoken
 langchain-core==0.1.15
@@ -26,3 +26,4 @@ PyMuPDF
 torch
 
 transformers
+
