@@ -1,112 +1,199 @@
-# AI Tutor
+# AI Tutor -- Agentic STEM Learning Assistant
 
-AI Tutor is a Retrieval-Augmented Generation (RAG) tutor prototype that combines retrieval over STEM PDFs with an LLM pipeline, a FastAPI backend, and a Streamlit UI. This project is designed to provide an interactive and adaptive learning experience for STEM topics.
+## Overview
 
-## Status
-- Current deliverables: 
-  - Retrieval-Augmented Generation (RAG) architecture.
-  - Data ingestion helpers for processing educational PDFs.
-  - FastAPI backend with endpoints for question answering.
-  - Streamlit-based user interface for interactive Q&A.
-  - Integration with Google Gemini for advanced LLM-based answer generation.
-- Work in progress: 
-  - Error handling, security, and performance optimizations.
-  - Enhanced support for adaptive difficulty and conversational context.
+AI Tutor is an intelligent learning assistant designed to help students
+understand STEM concepts through structured explanations and
+step-by-step reasoning.
+
+The system combines **Agentic AI**, **Retrieval Augmented Generation
+(RAG)**, and **context-aware dialogue** to provide reliable tutoring
+instead of simple answer generation.
+
+The goal of the project is to create an AI system that explains concepts
+clearly, supports problem solving, and improves conceptual
+understanding.
+
+------------------------------------------------------------------------
 
 ## Key Features
-- **Document Retrieval**: Retrieve relevant content from STEM PDFs (e.g., OpenStax) using FAISS.
-- **LLM Integration**: Generate answers using Hugging Face pipelines and Google Gemini models.
-- **Math Support**: Solve equations and enhance prompts with SymPy-based helpers.
-- **Interactive UI**: Streamlit-based frontend for user interaction.
-- **Backend API**: FastAPI backend with endpoints for question answering and ingestion.
-- **Docker Support**: Dockerfile for containerized deployment.
 
-## Repository Layout
-- `ai/` — RAG & model logic (e.g., `ai/rag.py`, `ai/sympy_agent.py`).
-- `api/` — FastAPI app and API wiring (e.g., `api/app/main.py`, `api/app/test.py`).
-- `ui/` — Streamlit frontend (e.g., `ui/app.py`).
-- `data/` — Documents for retrieval (e.g., `data/openstax/`, `data/ncert_private/`).
-- `docker/` — Dockerfiles for containerized deployment (e.g., `docker/api.DockerFile`).
-- `docs/` — Architecture diagrams and documentation.
-- `.github/` — CI/CD templates.
-- `tests/` — Test scripts and helpers (e.g., `test_ingest.py`).
-- `logs/` — Runtime logs (e.g., `issues.txt`, `responses.txt`).
+-   Step-by-step problem solving
+-   Retrieval Augmented Generation (RAG) for contextual answers
+-   Persistent chat history and conversation memory
+-   PDF knowledge ingestion for study material
+-   User authentication and session management
+-   Modern dark-themed user interface
 
-## Requirements
-- Python 3.11+ recommended.
-- See `requirements.txt` for exact Python dependencies.
+------------------------------------------------------------------------
 
-## Quick Start (Local)
+## System Architecture
 
-1. **Create & Activate Virtual Environment**
+User Interface (React) 
+      ↓ 
+REST API (FastAPI Backend) 
+      ↓ 
+RAG Pipeline
+(Document Retrieval + Context Construction) 
+      ↓ 
+AI Model
+(Transformer-based reasoning) 
+      ↓ 
+MongoDB Database (Users, Chats, Progress)
 
-   - macOS / Linux:
-     ```bash
-     python -m venv venv
-     source venv/bin/activate
-     ```
-   - Windows (PowerShell):
-     ```powershell
-     python -m venv venv
-     .\venv\Scripts\Activate.ps1
-     ```
+Workflow: 
+1. User submits a question through the web interface 
+2. Backend receives the request via FastAPI 
+3. Relevant knowledge is retrieved using the RAG pipeline 
+4. The AI model generates a structured response 
+5. The answer is returned to the frontend and stored in the database
 
-2. **Install Dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+------------------------------------------------------------------------
 
-3. **Run the API (Development)**
-   ```bash
-   cd api
-   uvicorn app.main:app --reload --port 8000
-   ```
-   - Endpoints:
-     - `GET /` (health check)
-     - `POST /ask` (question answering endpoint).
-   - The API initializes the RAG agent and attempts to load/build the FAISS index from the `data/` directory.
+## Tech Stack
 
-4. **Run the UI (Optional)**
-   ```bash
-   streamlit run ui/app.py
-   ```
-   - The UI posts questions to the API (default: `http://localhost:8000`).
+### Backend
 
-## Docker Deployment
-```bash
-docker build -f docker/api.DockerFile -t ai-tutor-api .
-docker run -p 8000:8000 ai-tutor-api
-```
+-   FastAPI
+-   Python
+-   Uvicorn
+-   PyPDF2
+-   HuggingFace Transformers
+-   PyTorch
+-   python-dotenv
 
-## Implementation Notes
-- **Vector Database**: The RAG agent uses FAISS for document retrieval. If the FAISS index is missing or corrupted, it will rebuild the index from PDFs in `data/openstax` using recursive chunking.
-- **LLM**: The system integrates with Hugging Face pipelines and Google Gemini for text generation. If model loading fails, the pipeline may return errors — validate using `api/app/test.py`.
-- **Math Support**: SymPy-based equation solving and prompt enhancement are implemented in `ai/`.
-- **Reindexing**: To rebuild the FAISS index, delete the `persist_dir` (default: `faiss_db`) and restart the API.
+### Frontend
 
-## Data & Licensing
-- OpenStax PDFs in `data/openstax/` are licensed under CC-BY 4.0. Attribution is required for redistribution. See `data/openstax/README.md` for details and sources.
-- Any NCERT PDFs (if present in `data/ncert_private/`) are for private/local use only and must not be redistributed or used for public model training.
+-   ReactJS
+-   Axios
+-   CSS (Dark UI theme)
 
-## Testing & Troubleshooting
-- **Smoke Test**: Validate the transformers pipeline:
-  ```bash
-  python api/app/test.py
-  ```
-- **Common Issues**:
-  - **No PDFs Found**: FAISS build skipped. Ensure PDFs are in `data/openstax/`.
-  - **Model Load Failures**: Check CPU/GPU availability and validate the transformers pipeline.
-  - **FastAPI Reload Issues on Windows**: `api/app/main.py` includes multiprocessing adjustments to avoid spawn issues.
+### Database
 
-## Development Tips
-- Read `ai/rag.py` for retrieval, prompt handling, and generation flow.
-- Inspect `api/app/main.py` for the API lifecycle and `/ask` endpoint.
-- Use logs (`issues.txt` and `responses.txt`) for runtime diagnostics.
+-   MongoDB Atlas
 
-## Credits
-- OpenStax (textbooks) — CC-BY 4.0. See `data/openstax/README.md` for attribution details.
+------------------------------------------------------------------------
 
-## Contact
-- Start with: `ai/rag.py` → `api/app/main.py` → `ui/app.py`.
+## Current Implementation Progress
 
+### Authentication System
 
+-   User registration
+-   Login functionality
+-   JWT-based authentication
+
+### Chat System
+
+-   AI tutor chat interface
+-   Persistent conversation storage
+-   Context-aware responses
+
+### Retrieval Augmented Generation (RAG)
+
+-   PDF document ingestion
+-   Knowledge extraction
+-   Context retrieval for responses
+
+### AI Response System
+
+-   Transformer model integration
+-   Structured reasoning-based responses
+
+### Frontend Interface
+
+-   Light and dark themed UI
+-   Chat interface connected to backend APIs
+
+------------------------------------------------------------------------
+
+## Project Structure
+
+project-root 
+│ ├── api 
+  │ └── app 
+  │ ├── main.py 
+  │ ├── db.py 
+  │ ├──dependencies.py 
+│ ├── models 
+  │ └── routes 
+  │ ├── rag 
+  │ ├── memory 
+  │ ├── retriever 
+  │ └── embeddings 
+│ ├── frontend 
+  │ ├── src 
+  │ ├── components 
+  │ └── pages 
+│ ├── requirements.txt 
+├── .env 
+└── README.md
+
+------------------------------------------------------------------------
+
+## Installation
+
+### Clone the Repository
+
+git clone https://github.com/321riyaroy123/ai-tutor.git 
+cd ai-tutor
+ 
+### Backend Setup
+
+pip install -r requirements.txt 
+uvicorn api.app.main:app --reload
+
+Backend runs on: http://localhost:8000
+
+### Frontend Setup
+
+cd frontend 
+npm install 
+npm start
+
+Frontend runs on: http://localhost:3000
+
+------------------------------------------------------------------------
+
+## API Endpoints
+
+  Endpoint    Method   Description
+  ----------- -------- ------------------------------
+  /register   POST     Register a new user
+  /login      POST     User authentication
+  /chat       POST     Send question to AI tutor
+  /history    GET      Retrieve chat history
+  /progress   GET      Fetch user learning progress
+
+------------------------------------------------------------------------
+
+## Future Improvements
+
+-   Improved reasoning agents
+-   Multi-document retrieval for RAG
+-   Mathematical expression rendering
+-   Voice-based tutoring interaction
+-   Adaptive difficulty based on learner progress
+-   Knowledge graph integration
+
+------------------------------------------------------------------------
+
+## Research Focus
+
+This project explores the integration of **Agentic AI + Retrieval
+Augmented Generation for educational tutoring systems**.
+
+The aim is to build AI tutors that prioritize reasoning, explanation,
+and conceptual clarity rather than only generating answers.
+
+------------------------------------------------------------------------
+
+## Author
+
+Riya Roy\
+Artificial Intelligence and Machine Learning
+
+------------------------------------------------------------------------
+
+## License
+
+This project is developed for academic and research purposes.
