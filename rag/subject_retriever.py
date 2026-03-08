@@ -11,9 +11,9 @@ class SubjectRetriever:
     def __init__(self, subject):
         self.subject = subject
 
-        self.index = faiss.read_index(f"api/rag/{subject}_index.faiss")
+        self.index = faiss.read_index(f"embeddings/{subject}_index.faiss")
 
-        with open(f"api/rag/{subject}_chunks.pkl", "rb") as f:
+        with open(f"embeddings/{subject}_chunks.pkl", "rb") as f:
             self.chunks = pickle.load(f)
 
         self.embedder = SentenceTransformer(MODEL_PATH)

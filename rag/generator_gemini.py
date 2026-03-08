@@ -1,7 +1,11 @@
 import os
+from typing import Any
 from dotenv import load_dotenv
-import google.generativeai as genai
+import google.generativeai as _genai
 from rag.prompt_templates import build_tutor_prompt
+
+# google-generativeai exposes these dynamically; treat as Any to satisfy static checkers.
+genai: Any = _genai
 
 load_dotenv(override=True)
 
