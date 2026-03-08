@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pathlib import Path
 from pypdf import PdfReader
-from langchain_community.document_transformers import RecursiveCharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
 import chromadb
 import json
@@ -74,5 +74,6 @@ def ingest_documents():
         "documents_ingested": documents_ingested,
         "total_chunks": len(all_chunks)
     }
+
 
 
