@@ -2,6 +2,7 @@ fastapi
 uvicorn
 pydantic
 pydantic-settings
+email-validator
 python-dotenv
 
 requests
@@ -30,4 +31,5 @@ google-generativeai
 
 python-jose[cryptography]
 passlib[bcrypt]
+
 
