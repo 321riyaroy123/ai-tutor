@@ -232,7 +232,7 @@ def _initialize_topic_embeddings():
             )
             _TOPIC_EMBED_CACHE[subject][topic] = emb
 
-_initialize_topic_embeddings()
+# _initialize_topic_embeddings()
 
 def _extract_topics(
     text: str,
@@ -278,7 +278,10 @@ def _semantic_topic_match(
 
     if topic_embedding_model is None:
         return []
-
+        
+    if not _TOPIC_EMBED_CACHE[subject]:
+        _initialize_topic_embeddings()
+    
     if not text.strip():
         return []
 
