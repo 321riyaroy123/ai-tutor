@@ -19,6 +19,7 @@ from api.app.db import db, chats_collection, progress_collection, users_collecti
 from rag.memory import get_history, add_to_history
 from rag.hybrid_generator import generate_answer
 from rag.subject_retriever import SubjectRetriever
+from rag.models import get_embedding_model
 
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -111,7 +112,7 @@ try:
     def get_topic_model():
         global topic_embedding_model
         if topic_embedding_model is None:
-            topic_embedding_model = SentenceTransformer("BAAI/bge-base-en-v1.5")
+            topic_embedding_model = get_embedding_model()
         return topic_embedding_model
 except Exception:
     topic_embedding_model = None  # Fail-safe fallback
@@ -225,7 +226,7 @@ def _initialize_topic_embeddings():
 
     for topic, subject in TOPIC_TAXONOMY:
         if topic not in _TOPIC_EMBED_CACHE[subject]:
-            topic_embedding_model = get_topic_model()
+            topic_embedding_model = get_embedding_model()
             emb = topic_embedding_model.encode(
                 topic,
                 normalize_embeddings=True
@@ -289,7 +290,7 @@ def _semantic_topic_match(
         return []
 
     try:
-        topic_embedding_model = get_topic_model()
+        topic_embedding_model = get_embedding_model()
         query_emb = topic_embedding_model.encode(
             text,
             normalize_embeddings=True
