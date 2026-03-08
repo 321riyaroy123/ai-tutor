@@ -117,18 +117,18 @@ def _initialize_topic_embeddings():
 
     model = get_model()
 
-    for topic, subject in TOPIC_TAXONOMY:
+    topics = [topic for topic, _ in TOPIC_TAXONOMY]
+
+    embeddings = model.encode(
+        topics,
+        normalize_embeddings=True
+    )
+
+    for (topic, subject), emb in zip(TOPIC_TAXONOMY, embeddings):
 
         if topic not in _TOPIC_EMBED_CACHE[subject]:
 
-            emb: np.ndarray = np.asarray(
-                model.encode(
-                    topic,
-                    normalize_embeddings=True
-                )
-            )
-
-            _TOPIC_EMBED_CACHE[subject][topic] = emb
+            _TOPIC_EMBED_CACHE[subject][topic] = np.asarray(emb)
 
 def _extract_topics(
     text: str,
@@ -172,18 +172,14 @@ def _semantic_topic_match(
     threshold: float = 0.55
 ) -> list[str]:
 
-    topic_embedding_model = get_model()
-    if topic_embedding_model is None:
-        return []
-        
-    if not _TOPIC_EMBED_CACHE[subject]:
-        _initialize_topic_embeddings()
-    
     if not text.strip():
         return []
 
     if subject not in _TOPIC_EMBED_CACHE:
         return []
+
+    if not _TOPIC_EMBED_CACHE["physics"] and not _TOPIC_EMBED_CACHE["math"]:
+        _initialize_topic_embeddings()
 
     try:
         query_emb = embed_text(text)
@@ -191,7 +187,9 @@ def _semantic_topic_match(
         scored: list[tuple[str, float]] = []
 
         for topic, topic_emb in _TOPIC_EMBED_CACHE[subject].items():
+
             score = float(np.dot(query_emb, topic_emb))
+
             if score >= threshold:
                 scored.append((topic, score))
 
