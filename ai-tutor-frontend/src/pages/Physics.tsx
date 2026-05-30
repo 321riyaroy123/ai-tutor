@@ -7,6 +7,7 @@ import ChatInput from "../components/ChatInput"
 import ChatMessage from "../components/ChatMessage"
 import { defaultAnalytics } from "../components/AnalyticsPanel"
 import type { AnalyticsData } from "../components/AnalyticsPanel"
+import { getApiBaseUrl } from "../lib/api"
 
 type ChatRole = "user" | "assistant"
 type ChatMessageType = { role: ChatRole; content: string }
@@ -43,9 +44,9 @@ export default function Physics() {
     const startTime = Date.now()
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const apiUrl = getApiBaseUrl()
       const response = await axios.post(
-        `${API_URL}/ask`,
+        `${apiUrl}/ask`,
         {
           user_id: chatId,
           question: message,
@@ -54,7 +55,7 @@ export default function Physics() {
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       )
 
       const elapsed = (Date.now() - startTime) / 1000

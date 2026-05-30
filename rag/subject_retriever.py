@@ -1,68 +1,62 @@
-import faiss
 import pickle
+from pathlib import Path
+
+import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
+
 from rag.reranker import rerank
 
 MODEL_PATH = "models/bge-base-en-v1.5"
+EMBEDDINGS_DIR = Path("embeddings")
+
 
 class SubjectRetriever:
-
-    def __init__(self, subject):
+    def __init__(self, subject: str):
         self.subject = subject
+        index_path = EMBEDDINGS_DIR / f"{subject}_index.faiss"
+        chunks_path = EMBEDDINGS_DIR / f"{subject}_chunks.pkl"
 
-        self.index = faiss.read_index(f"embeddings/{subject}_index.faiss")
+        self.index = faiss.read_index(str(index_path))
 
-        with open(f"embeddings/{subject}_chunks.pkl", "rb") as f:
+        with open(chunks_path, "rb") as f:
             self.chunks = pickle.load(f)
 
         self.embedder = SentenceTransformer(MODEL_PATH)
 
-    def retrieve(self, query, top_k=8, final_k=3):
-
-        # -----------------------------
-        # Embed Query
-        # -----------------------------
+    def retrieve(self, query: str, top_k: int = 8, final_k: int = 3):
         query_embedding = self.embedder.encode(
             [f"query: {query}"],
-            convert_to_numpy=True
+            convert_to_numpy=True,
         )
 
-        query_embedding = query_embedding / np.linalg.norm(
-            query_embedding, axis=1, keepdims=True
-        )
+        norms = np.linalg.norm(query_embedding, axis=1, keepdims=True)
+        norms[norms == 0] = 1.0
+        query_embedding = query_embedding / norms
 
-        # -----------------------------
-        # FAISS Search
-        # -----------------------------
         scores, indices = self.index.search(query_embedding, top_k)
+        candidate_chunks = [
+            self.chunks[idx]
+            for idx in indices[0]
+            if 0 <= idx < len(self.chunks)
+        ]
 
-        candidate_chunks = []
-        for idx in indices[0]:
-            candidate_chunks.append(self.chunks[idx])
+        if not candidate_chunks:
+            return "", [], [], 0.0
 
-        # -----------------------------
-        # Rerank
-        # -----------------------------
-        rerank_texts = [c["text"] for c in candidate_chunks]
+        rerank_texts = [chunk["text"] for chunk in candidate_chunks]
         top_texts, _ = rerank(query, rerank_texts, final_k)
 
         final_chunks = []
         for text in top_texts:
-            for c in candidate_chunks:
-                if c["text"] == text:
-                    final_chunks.append(c)
+            for chunk in candidate_chunks:
+                if chunk["text"] == text:
+                    final_chunks.append(chunk)
                     break
 
-        # -----------------------------
-        # Build Return Values
-        # -----------------------------
-        context = "\n".join([c["text"] for c in final_chunks])
-
-        pages = list({c.get("page", 0) for c in final_chunks})
-
-        sources = list({c.get("source", "unknown") for c in final_chunks})
-
+        context = "\n".join(chunk["text"] for chunk in final_chunks)
+        pages = list({chunk.get("page", 0) for chunk in final_chunks})
+        sources = list({chunk.get("source", "unknown") for chunk in final_chunks})
         base_conf = float(max(scores[0])) if len(scores[0]) > 0 else 0.0
 
         return context, pages, sources, base_conf

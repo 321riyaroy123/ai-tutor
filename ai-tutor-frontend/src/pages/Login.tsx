@@ -2,6 +2,7 @@ import { motion } from "framer-motion"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
+import { getApiBaseUrl } from "../lib/api"
 
 export default function Login() {
   const navigate = useNavigate()
@@ -21,8 +22,8 @@ export default function Login() {
     setError("")
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
-      const res = await axios.post(`${API_URL}/login`, { email, password })
+      const apiUrl = getApiBaseUrl()
+      const res = await axios.post(`${apiUrl}/login`, { email, password })
       localStorage.setItem("token", res.data.access_token)
       navigate("/dashboard")
     } catch (err: unknown) {
@@ -85,7 +86,7 @@ export default function Login() {
             disabled={loading}
             className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? "Signing in…" : "Login"}
+            {loading ? "Signing in..." : "Login"}
           </button>
 
           <button

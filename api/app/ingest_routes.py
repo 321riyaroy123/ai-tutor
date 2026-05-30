@@ -1,10 +1,11 @@
+from functools import lru_cache
+import json
 from fastapi import APIRouter
 from pathlib import Path
 from pypdf import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
 import chromadb
-import json
 import uuid
 
 router = APIRouter(prefix="/ingest", tags=["Ingestion"])
@@ -17,21 +18,23 @@ DB_DIR = BASE_DIR / "rag_db"
 
 CHUNK_DIR.mkdir(parents=True, exist_ok=True)
 
-# ---- Models ----
-embedder = SentenceTransformer("all-MiniLM-L6-v2")
-
-# ---- Chroma Client ----
-chroma_client = chromadb.PersistentClient(path=str(DB_DIR))
-collection = chroma_client.get_or_create_collection(name="ai_tutor")
-
 # ---- Helpers ----
 def extract_text(pdf_path: Path) -> str:
     reader = PdfReader(str(pdf_path))
     return "\n".join(page.extract_text() for page in reader.pages if page.extract_text())
 
+
+@lru_cache(maxsize=1)
+def get_ingest_resources():
+    embedder = SentenceTransformer("all-MiniLM-L6-v2")
+    chroma_client = chromadb.PersistentClient(path=str(DB_DIR))
+    collection = chroma_client.get_or_create_collection(name="ai_tutor")
+    return embedder, collection
+
 # ---- Route ----
 @router.post("/")
 def ingest_documents():
+    embedder, collection = get_ingest_resources()
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
         chunk_overlap=50

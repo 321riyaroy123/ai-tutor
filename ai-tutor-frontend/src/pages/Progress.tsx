@@ -6,6 +6,7 @@ import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend,
 } from "recharts"
 import ThemeToggle from "../components/ThemeToggle"
+import { getApiBaseUrl } from "../lib/api"
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -354,8 +355,8 @@ export default function Progress() {
 
     const loadProgress = async () => {
       try {
-        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        const res = await axios.get<ProgressData>(`${API_URL}/progress`, {
+        const apiUrl = getApiBaseUrl()
+        const res = await axios.get<ProgressData>(`${apiUrl}/progress`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (cancelled) return

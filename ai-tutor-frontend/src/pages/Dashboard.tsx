@@ -1,38 +1,39 @@
 import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
+
 import Layout from "../components/Layout"
 
 type DashboardCard = {
-  title:       string
+  title: string
   description: string
-  route:       string
-  icon:        string
+  route: string
+  icon: string
 }
 
 const cards: DashboardCard[] = [
   {
-    title:       "Physics Tutor",
+    title: "Physics Tutor",
     description: "Explore mechanics, fields, and conceptual reasoning with guided steps.",
-    route:       "/physics/new",
-    icon:        "⚛",
+    route: "/physics/new",
+    icon: "\u269B",
   },
   {
-    title:       "Math Tutor",
+    title: "Math Tutor",
     description: "Practice algebra, calculus, and proofs with clear explanations.",
-    route:       "/math/new",
-    icon:        "∑",
+    route: "/math/new",
+    icon: "\u2211",
   },
   {
-    title:       "Progress Tracker",
+    title: "Progress Tracker",
     description: "Review completion trends and confidence growth over recent sessions.",
-    route:       "/progress",
-    icon:        "◈",
+    route: "/progress",
+    icon: "\u25C8",
   },
   {
-    title:       "Settings",
+    title: "Settings",
     description: "Adjust dark mode, readable scaling, and dyslexia-friendly typography.",
-    route:       "/settings",
-    icon:        "⚙",
+    route: "/settings",
+    icon: "\u2699",
   },
 ]
 
@@ -71,14 +72,12 @@ export default function Dashboard() {
         }
       `}</style>
 
-      {/* Hero */}
       <div style={{ marginBottom: "1.1rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem" }}>
         <motion.div
           initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.38 }}
         >
-          
           <h1 style={{ fontSize: "2.35rem", margin: "0 0 0.2rem", display: "flex", flexWrap: "wrap" }}>
             {"Welcome Back!".split("").map((char, i) => (
               <motion.span
@@ -100,7 +99,7 @@ export default function Dashboard() {
             ))}
           </h1>
           <p style={{ fontSize: "0.98rem", color: "var(--text-soft)", maxWidth: "460px", lineHeight: 1.5, margin: 0 }}>
-            Stella is ready to help you study — professional, focused, and always at your pace.
+            Stella is ready to help you study - professional, focused, and always at your pace.
           </p>
         </motion.div>
 
@@ -120,7 +119,7 @@ export default function Dashboard() {
                 fontSize: "2rem",
               }}
             >
-              🎓
+              {"\u{1F393}"}
             </div>
           </div>
         </motion.div>
@@ -128,7 +127,6 @@ export default function Dashboard() {
 
       <div className="neon-divider" />
 
-      {/* Card grid */}
       <div style={{ display: "grid", gap: "0.85rem", gridTemplateColumns: "repeat(2, 1fr)" }}>
         {cards.map((card, index) => (
           <motion.section
@@ -165,7 +163,7 @@ export default function Dashboard() {
               className="grad-btn"
               style={{ width: "fit-content" }}
             >
-              Open →
+              Open {"\u2192"}
             </button>
           </motion.section>
         ))}

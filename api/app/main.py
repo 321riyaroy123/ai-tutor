@@ -1,12 +1,14 @@
 import multiprocessing
-import sys
 import os
+import sys
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.app.db import db, progress_collection
 from api.app.auth_routes import router as auth_router
 from api.app.ingest_routes import router as ingest_router
+from api.app.progress_routes import router as progress_router
 from api.app.tutor_routes import router as tutor_router
 
 # ----------------------------
@@ -21,21 +23,19 @@ if sys.platform == "win32":
 # ----------------------------
 # FastAPI Initialization
 # ----------------------------
-app = FastAPI(
-    title="AI Tutor API",
-    description="Hybrid RAG AI Tutor",
-    version="2.0.0"
-)
+app = FastAPI(title="AI Tutor API", description="Hybrid RAG AI Tutor", version="2.0.0")
+
+frontend_url = os.getenv("FRONTEND_URL", "").strip()
+CORS_ORIGINS = ["http://localhost:5173"]
+if frontend_url and frontend_url not in CORS_ORIGINS:
+    CORS_ORIGINS.append(frontend_url)
 
 # ----------------------------
 # CORS
 # ----------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "https://your-vercel-app.vercel.app"
-    ],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -46,6 +46,7 @@ app.add_middleware(
 # ----------------------------
 app.include_router(auth_router)
 app.include_router(ingest_router)
+app.include_router(progress_router)
 app.include_router(tutor_router)
 
 # ----------------------------
@@ -71,7 +72,4 @@ async def ensure_progress_collection():
 # ----------------------------
 @app.get("/")
 def root():
-    return {
-        "status": "running",
-        "stage": "Hybrid RAG + Auth"
-    }
+    return {"status": "running", "stage": "Hybrid RAG + Auth"}

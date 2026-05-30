@@ -1,9 +1,15 @@
-import Sidebar from "./Sidebar.tsx"
-import AnalyticsPanel from "./AnalyticsPanel.tsx"
-import type { AnalyticsData } from "./AnalyticsPanel.tsx"
-import Stella from "./Stella.tsx"
+import type { ReactNode } from "react"
+import AnalyticsPanel from "./AnalyticsPanel"
+import type { AnalyticsData } from "./AnalyticsPanel"
+import Sidebar from "./Sidebar"
+import Stella from "./Stella"
 
-export default function Layout({ children, analytics }: { children: React.ReactNode; analytics?: AnalyticsData }) {
+type LayoutProps = {
+  children: ReactNode
+  analytics?: AnalyticsData
+}
+
+export default function Layout({ children, analytics }: LayoutProps) {
   return (
     <div className="app-shell" style={{ display:"flex", flexDirection:"row", minHeight:"100vh", width:"100%", alignItems:"stretch" }}>
       <Sidebar />

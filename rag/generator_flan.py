@@ -10,7 +10,6 @@ model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-base")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
-
 def generate_with_flan(
     context,
     question,

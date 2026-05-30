@@ -1,5 +1,5 @@
 import re
-from typing import List, Dict
+from typing import Dict, List
 
 
 def clean_math_text(text: str) -> str:
@@ -14,7 +14,7 @@ def clean_math_text(text: str) -> str:
     # Normalize whitespace
     text = re.sub(r"\s+", " ", text)
 
-    # Fix simple exponent patterns: x 2 → x^2
+    # Fix simple exponent patterns such as "x 2" -> "x^2".
     text = re.sub(r"([a-zA-Z])\s+(\d+)", r"\1^\2", text)
 
     # Fix common fraction artifacts
@@ -22,7 +22,7 @@ def clean_math_text(text: str) -> str:
     text = text.replace("_ _", "/")
 
     # Remove weird unicode artifacts
-    text = re.sub(r"[]", "", text)
+    text = re.sub(r"[î€¢î€ª]", "", text)
 
     return text.strip()
 
@@ -43,8 +43,7 @@ def _chunk_paragraphs(
     min_words: int,
     max_words: int
 ) -> List[Dict]:
-
-    paragraphs = re.split(r'\n\s*\n', text.strip())
+    paragraphs = re.split(r"\n\s*\n", text.strip())
 
     chunks = []
     buffer_words = []
@@ -56,23 +55,21 @@ def _chunk_paragraphs(
 
         words = para.split()
 
-        # Split very long paragraph
         if len(words) > max_words:
             if buffer_words:
                 chunks.append({
                     "page": page_number,
-                    "text": " ".join(buffer_words).strip()
+                    "text": " ".join(buffer_words).strip(),
                 })
                 buffer_words = []
 
             for sub in _split_long_paragraph(words, max_words):
                 chunks.append({
                     "page": page_number,
-                    "text": sub.strip()
+                    "text": sub.strip(),
                 })
             continue
 
-        # Merge small paragraphs
         if len(words) < min_words:
             buffer_words.extend(words)
 
@@ -80,7 +77,7 @@ def _chunk_paragraphs(
                 for sub in _split_long_paragraph(buffer_words, max_words):
                     chunks.append({
                         "page": page_number,
-                        "text": sub.strip()
+                        "text": sub.strip(),
                     })
                 buffer_words = []
 
@@ -90,28 +87,28 @@ def _chunk_paragraphs(
                 if len(combined) <= max_words:
                     chunks.append({
                         "page": page_number,
-                        "text": " ".join(combined).strip()
+                        "text": " ".join(combined).strip(),
                     })
                 else:
                     chunks.append({
                         "page": page_number,
-                        "text": " ".join(buffer_words).strip()
+                        "text": " ".join(buffer_words).strip(),
                     })
                     chunks.append({
                         "page": page_number,
-                        "text": " ".join(words).strip()
+                        "text": " ".join(words).strip(),
                     })
                 buffer_words = []
             else:
                 chunks.append({
                     "page": page_number,
-                    "text": " ".join(words).strip()
+                    "text": " ".join(words).strip(),
                 })
 
     if buffer_words:
         chunks.append({
             "page": page_number,
-            "text": " ".join(buffer_words).strip()
+            "text": " ".join(buffer_words).strip(),
         })
 
     return chunks
@@ -141,12 +138,9 @@ def chunk_text(
     if clean_math:
         text = clean_math_text(text)
 
-    # Detect page markers
     pages = re.split(r"\[PAGE\s+(\d+)\]", text)
-
     chunks = []
 
-    # If page markers exist
     if len(pages) > 2:
         for i in range(1, len(pages), 2):
             page_number = int(pages[i])
@@ -156,20 +150,18 @@ def chunk_text(
                 page_text,
                 page_number,
                 min_words,
-                max_words
+                max_words,
             )
             chunks.extend(page_chunks)
-
     else:
-        # No page markers → treat entire text as page 0
+        # No page markers -> treat entire text as page 0.
         chunks = _chunk_paragraphs(
             text,
             0,
             min_words,
-            max_words
+            max_words,
         )
 
-    # Final fallback (rare case)
     if not chunks:
         words = text.split()
         i = 0
@@ -177,7 +169,7 @@ def chunk_text(
             part = words[i:i + max_words]
             chunks.append({
                 "page": 0,
-                "text": " ".join(part).strip()
+                "text": " ".join(part).strip(),
             })
             i += max_words
 

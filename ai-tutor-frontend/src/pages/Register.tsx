@@ -3,6 +3,7 @@ import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import ThemeToggle from "../components/ThemeToggle"
+import { getApiBaseUrl } from "../lib/api"
 
 export default function Register() {
   const navigate = useNavigate()
@@ -13,10 +14,10 @@ export default function Register() {
 
   const handleRegister = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      await axios.post(`${API_URL}/register`, {
+      const apiUrl = getApiBaseUrl()
+      await axios.post(`${apiUrl}/register`, {
         email,
-        password
+        password,
       })
 
       navigate("/")

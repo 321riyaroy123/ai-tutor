@@ -1,20 +1,22 @@
-import os
-import faiss
 import pickle
+from pathlib import Path
+
+import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
+
 from rag.chunker import chunk_text
 
-
 MODEL_PATH = "models/bge-base-en-v1.5"
+EMBEDDINGS_DIR = Path("embeddings")
 
 
 def build_subject_index(text_path: str, subject: str):
     """
     Builds a FAISS index for a specific subject.
     Saves:
-        rag/{subject}_index.faiss
-        rag/{subject}_chunks.pkl
+        embeddings/{subject}_index.faiss
+        embeddings/{subject}_chunks.pkl
     """
 
     print(f"Building index for {subject}...")
@@ -23,35 +25,29 @@ def build_subject_index(text_path: str, subject: str):
         text = f.read()
 
     clean_math = subject.lower() == "math"
-
     chunks = chunk_text(text, clean_math=clean_math)
 
     print(f"Total chunks for {subject}: {len(chunks)}")
 
     embedder = SentenceTransformer(MODEL_PATH)
-
-    texts = [f"passage: {c['text']}" for c in chunks]
-
+    texts = [f"passage: {chunk['text']}" for chunk in chunks]
     embeddings = embedder.encode(
         texts,
         convert_to_numpy=True,
-        show_progress_bar=True
+        show_progress_bar=True,
     )
 
-    # Normalize for cosine similarity
     norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
     norms[norms == 0] = 1.0
-    embeddings = embeddings / norms
-    embeddings = embeddings.astype(np.float32)
+    embeddings = (embeddings / norms).astype(np.float32)
 
     index = faiss.IndexFlatIP(embeddings.shape[1])
     index.add(embeddings)
 
-    os.makedirs("embeddings", exist_ok=True)
+    EMBEDDINGS_DIR.mkdir(exist_ok=True)
+    faiss.write_index(index, str(EMBEDDINGS_DIR / f"{subject}_index.faiss"))
 
-    faiss.write_index(index, f"embeddings/{subject}_index.faiss")
-
-    with open(f"embeddings/{subject}_chunks.pkl", "wb") as f:
+    with open(EMBEDDINGS_DIR / f"{subject}_chunks.pkl", "wb") as f:
         pickle.dump(chunks, f)
 
-    print(f"✅ {subject} index built successfully")
+    print(f"{subject} index built successfully")

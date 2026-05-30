@@ -1,7 +1,9 @@
 import os
 from typing import Any
-from dotenv import load_dotenv
+
 import google.generativeai as _genai
+from dotenv import load_dotenv
+
 from rag.prompt_templates import build_tutor_prompt
 
 # google-generativeai exposes these dynamically; treat as Any to satisfy static checkers.
@@ -17,23 +19,23 @@ genai.configure(api_key=GOOGLE_API_KEY)
 
 model = genai.GenerativeModel("models/gemini-2.5-flash")
 
-# Token budgets per mode — generous enough to never cut off, tight enough to be efficient
+# Token budgets per mode: generous enough to avoid cutoffs, tight enough to be efficient.
 TOKEN_BUDGET = {
-    "followup_answers": 1200,   # Final answers only — compact
-    "detailed_solver":  8192,   # Full step-by-step — needs room
-    "solver":           4096,   # Single problem solve
-    "concept":          3000,   # Explanation + examples
+    "followup_answers": 1200,   # Final answers only; compact
+    "detailed_solver": 8192,    # Full step-by-step; needs room
+    "solver": 4096,             # Single problem solve
+    "concept": 3000,            # Explanation + examples
 }
+
 
 def generate_with_gemini(context, question, student_level,
                          conversation_context="", mode="concept"):
-
     prompt = build_tutor_prompt(
         context,
         question,
         student_level,
         conversation_context,
-        mode=mode
+        mode=mode,
     )
 
     max_tokens = TOKEN_BUDGET.get(mode, 3000)
@@ -43,7 +45,7 @@ def generate_with_gemini(context, question, student_level,
         generation_config={
             "temperature": 0.3,
             "max_output_tokens": max_tokens,
-        }
+        },
     )
 
     return response.text
