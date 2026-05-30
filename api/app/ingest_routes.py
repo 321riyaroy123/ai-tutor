@@ -1,11 +1,8 @@
-from functools import lru_cache
-import json
 from fastapi import APIRouter
 from pathlib import Path
 from pypdf import PdfReader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from sentence_transformers import SentenceTransformer
-import chromadb
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+import json
 import uuid
 
 router = APIRouter(prefix="/ingest", tags=["Ingestion"])
@@ -20,30 +17,27 @@ CHUNK_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---- Helpers ----
 def extract_text(pdf_path: Path) -> str:
+    """Extract text from PDF file."""
     reader = PdfReader(str(pdf_path))
     return "\n".join(page.extract_text() for page in reader.pages if page.extract_text())
-
-
-@lru_cache(maxsize=1)
-def get_ingest_resources():
-    embedder = SentenceTransformer("all-MiniLM-L6-v2")
-    chroma_client = chromadb.PersistentClient(path=str(DB_DIR))
-    collection = chroma_client.get_or_create_collection(name="ai_tutor")
-    return embedder, collection
 
 # ---- Route ----
 @router.post("/")
 def ingest_documents():
-    embedder, collection = get_ingest_resources()
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50
-    )
+    """Ingest PDF documents and store embeddings in ChromaDB."""
+    # Lazy-load heavy dependencies to avoid startup failures
+    from sentence_transformers import SentenceTransformer
+    import chromadb
 
+    embedder = SentenceTransformer("all-MiniLM-L6-v2")
+    chroma_client = chromadb.PersistentClient(path=str(DB_DIR))
+    collection = chroma_client.get_or_create_collection(name="ai_tutor")
+
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     all_chunks = []
     documents_ingested = 0
 
-    for pdf_file in DATA_DIR.glob("University_Physics_Volume_1_-_WEB.pdf"):
+    for pdf_file in DATA_DIR.glob("*.pdf"):  # Ingest all PDFs, not just one
         text = extract_text(pdf_file)
         chunks = splitter.split_text(text)
 
@@ -55,9 +49,7 @@ def ingest_documents():
                 documents=[chunk],
                 embeddings=[embedding],
                 ids=[chunk_id],
-                metadatas=[{
-                    "source": pdf_file.name
-                }]
+                metadatas=[{"source": pdf_file.name}]
             )
 
             all_chunks.append({
@@ -68,7 +60,7 @@ def ingest_documents():
 
         documents_ingested += 1
 
-    # Save chunk metadata (for evaluation + transparency)
+    # Save chunk metadata for evaluation and transparency
     with open(CHUNK_DIR / "chunks.json", "w", encoding="utf-8") as f:
         json.dump(all_chunks, f, indent=2)
 
