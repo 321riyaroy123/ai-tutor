@@ -28,7 +28,7 @@ def ingest_documents():
 
     embedder      = SentenceTransformer("all-MiniLM-L6-v2")
     chroma_client = chromadb.PersistentClient(path=str(DB_DIR))
-    collection    = chroma_client.get_or_create_collection(name="ai_tutor")
+    collection    = chroma_client.get_or_create_collection(name="ai-tutor")
 
     all_chunks        = []
     documents_ingested = 0
