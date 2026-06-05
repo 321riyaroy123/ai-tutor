@@ -5,7 +5,7 @@ MONGO_URL = get_required_env("MONGO_URL")
 
 client = AsyncIOMotorClient(MONGO_URL)
 
-db = client["ai_tutor"]
+db = client["ai-tutor"]
 
 users_collection = db["users"]
 chats_collection = db["chats"]
