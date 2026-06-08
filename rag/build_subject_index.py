@@ -1,36 +1,21 @@
+# rag/build_subject_index.py  — updated to use Gemini embeddings
+
 import pickle
 from pathlib import Path
 
 import faiss
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from dotenv import load_dotenv
 
-# Ensure repo root is on sys.path so absolute imports like `rag.chunker` work
-import os
-import sys
+load_dotenv(override=True)
 
-_repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if _repo_root not in sys.path:
-    sys.path.insert(0, _repo_root)
+from rag.chunker import chunk_text
+from rag.gemini_embedder import embed_passage
 
-# Try package-relative import first, then absolute
-try:
-    from .chunker import chunk_text
-except Exception:
-    from rag.chunker import chunk_text
-
-MODEL_PATH = "sentence-transformers/all-MiniLM-L6-v2"
 EMBEDDINGS_DIR = Path("embeddings")
 
 
 def build_subject_index(text_path: str, subject: str):
-    """
-    Builds a FAISS index for a specific subject.
-    Saves:
-        embeddings/{subject}_index.faiss
-        embeddings/{subject}_chunks.pkl
-    """
-
     print(f"Building index for {subject}...")
 
     with open(text_path, "r", encoding="utf-8") as f:
@@ -38,20 +23,20 @@ def build_subject_index(text_path: str, subject: str):
 
     clean_math = subject.lower() == "math"
     chunks = chunk_text(text, clean_math=clean_math)
+    print(f"Total chunks: {len(chunks)}")
 
-    print(f"Total chunks for {subject}: {len(chunks)}")
+    embeddings = []
+    for i, chunk in enumerate(chunks):
+        emb = embed_passage(chunk["text"])
+        embeddings.append(emb)
+        if i % 50 == 0:
+            print(f"  Embedded {i}/{len(chunks)}")
 
-    embedder = SentenceTransformer(MODEL_PATH)
-    texts = [f"passage: {chunk['text']}" for chunk in chunks]
-    embeddings = embedder.encode(
-        texts,
-        convert_to_numpy=True,
-        show_progress_bar=True,
-    )
+    embeddings = np.array(embeddings, dtype=np.float32)
 
     norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
     norms[norms == 0] = 1.0
-    embeddings = (embeddings / norms).astype(np.float32)
+    embeddings = embeddings / norms
 
     index = faiss.IndexFlatIP(embeddings.shape[1])
     index.add(embeddings)
@@ -65,5 +50,5 @@ def build_subject_index(text_path: str, subject: str):
     print(f"{subject} index built successfully")
 
 
-build_subject_index("D:/RIYA/Projects/AI Tutor/data/math_book.txt", "math")
-build_subject_index("D:/RIYA/Projects/AI Tutor/data/physics.txt", "physics")
+build_subject_index("data/math_book.txt", "math")
+build_subject_index("data/physics.txt", "physics")
