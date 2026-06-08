@@ -5,10 +5,9 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from rag.reranker import rerank
-
 MODEL_PATH = "sentence-transformers/all-MiniLM-L6-v2"
 EMBEDDINGS_DIR = Path("embeddings")
+EMBEDDER = SentenceTransformer(MODEL_PATH)
 
 
 class SubjectRetriever:
@@ -22,10 +21,8 @@ class SubjectRetriever:
         with open(chunks_path, "rb") as f:
             self.chunks = pickle.load(f)
 
-        self.embedder = SentenceTransformer(MODEL_PATH)
-
     def retrieve(self, query: str, top_k: int = 8, final_k: int = 3):
-        query_embedding = self.embedder.encode(
+        query_embedding = EMBEDDER.encode(
             [f"query: {query}"],
             convert_to_numpy=True,
         )
@@ -45,7 +42,7 @@ class SubjectRetriever:
             return "", [], [], 0.0
 
         rerank_texts = [chunk["text"] for chunk in candidate_chunks]
-        top_texts, _ = rerank(query, rerank_texts, final_k)
+        top_texts = rerank_texts[:final_k]
 
         final_chunks = []
         for text in top_texts:

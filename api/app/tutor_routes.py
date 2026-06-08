@@ -11,6 +11,7 @@ from rag.memory import add_to_history, get_history
 router = APIRouter(tags=["Tutor"])
 
 VALID_SUBJECTS = {"physics", "math"}
+RETRIEVERS = {}
 
 
 class AskRequest(BaseModel):
@@ -42,7 +43,10 @@ def _format_conversation_context(user_id: str) -> str:
 def _get_subject_retriever(subject: str):
     from rag.subject_retriever import SubjectRetriever
 
-    return SubjectRetriever(subject)
+    if subject not in RETRIEVERS:
+        RETRIEVERS[subject] = SubjectRetriever(subject)
+
+    return RETRIEVERS[subject]
 
 
 def _generate_answer(**kwargs):
