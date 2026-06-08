@@ -80,9 +80,13 @@ async def ask_tutor(
             detail=f"Subject index for '{subject}' is not available",
         ) from error
     except Exception as error:
+        import traceback
+
+        print(traceback.format_exc())
+
         raise HTTPException(
             status_code=500,
-            detail="Failed to retrieve study material context",
+            detail=str(error),
         ) from error
 
     conversation_context = _format_conversation_context(chat_id)
