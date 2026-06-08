@@ -8,7 +8,7 @@ def get_embedding_model():
     if _embedding_model is None:
         print("Loading embedding model...")
         _embedding_model = SentenceTransformer(
-            "BAAI/bge-base-en-v1.5",
+            "sentence-transformers/all-MiniLM-L6-v2",
             cache_folder="./models"
         )
         print("Embedding model loaded")

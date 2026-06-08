@@ -5,7 +5,19 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from rag.chunker import chunk_text
+# Ensure repo root is on sys.path so absolute imports like `rag.chunker` work
+import os
+import sys
+
+_repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _repo_root not in sys.path:
+    sys.path.insert(0, _repo_root)
+
+# Try package-relative import first, then absolute
+try:
+    from .chunker import chunk_text
+except Exception:
+    from rag.chunker import chunk_text
 
 MODEL_PATH = "sentence-transformers/all-MiniLM-L6-v2"
 EMBEDDINGS_DIR = Path("embeddings")
@@ -51,3 +63,7 @@ def build_subject_index(text_path: str, subject: str):
         pickle.dump(chunks, f)
 
     print(f"{subject} index built successfully")
+
+
+build_subject_index("D:/RIYA/Projects/AI Tutor/data/math_book.txt", "math")
+build_subject_index("D:/RIYA/Projects/AI Tutor/data/physics.txt", "physics")

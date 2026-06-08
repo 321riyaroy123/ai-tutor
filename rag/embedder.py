@@ -39,7 +39,7 @@ def build_faiss_index(text_paths):
 
     print(f"Total combined chunks: {len(all_chunks)}")
 
-    embedder = SentenceTransformer("models/bge-base-en-v1.5")
+    embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
     texts = [f"passage: {chunk['text']}" for chunk in all_chunks]
     embeddings = embedder.encode(
         texts,
