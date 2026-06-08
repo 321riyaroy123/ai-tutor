@@ -1,4 +1,5 @@
-from rag.generator_flan import generate_with_flan
+# rag/hybrid_generator.py
+
 from rag.generator_gemini import generate_with_gemini
 
 
@@ -11,12 +12,6 @@ def generate_answer(context, question, base_confidence,
                     student_level="intermediate", conversation_context="",
                     confidence_threshold=0.3,
                     followup_mode=None):
-    """
-    followup_mode: None | "answers" | "detailed"
-      - "answers"  -> give final answers only for a previously generated problem set
-      - "detailed" -> give full step-by-step solutions for a previously generated set
-      - None       -> normal question routing
-    """
 
     confidence = base_confidence if base_confidence else 0.0
 
@@ -27,17 +22,15 @@ def generate_answer(context, question, base_confidence,
             confidence,
         )
 
-    # Follow-up: solutions to a previously generated problem set.
     if followup_mode == "answers":
         mode = "followup_answers"
-        context_to_use = context  # context holds the injected problem set
+        context_to_use = context
     elif followup_mode == "detailed":
         mode = "detailed_solver"
         context_to_use = context
-    # New direct question.
     elif is_computational_math(question):
         mode = "solver"
-        context_to_use = ""  # no RAG needed for self-contained problems
+        context_to_use = ""
     else:
         mode = "concept"
         context_to_use = context
@@ -59,15 +52,13 @@ def generate_answer(context, question, base_confidence,
     except Exception as error:
         print(f"Gemini failed ({mode}):", error)
 
+        # Lazy import — only loads FLAN-T5 into RAM if Gemini actually fails
         try:
+            from rag.generator_flan import generate_with_flan  # noqa: PLC0415
             fallback_answer = generate_with_flan(
-                context,
-                question,
-                student_level,
-                conversation_context,
+                context, question, student_level, conversation_context
             )
             return fallback_answer, "flan-t5", confidence
-
         except Exception as fallback_error:
             print("FLAN also failed:", fallback_error)
             raise

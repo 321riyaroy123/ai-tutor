@@ -1,20 +1,27 @@
-from sentence_transformers import CrossEncoder
+# rag/reranker.py
 
-# Load once at startup
-reranker_model = CrossEncoder(
-    "cross-encoder/ms-marco-MiniLM-L-6-v2"
-)
+_reranker_model = None
 
-def rerank(query, candidate_chunks, top_n=3):
+
+def _get_reranker():
+    global _reranker_model
+    if _reranker_model is None:
+        from sentence_transformers import CrossEncoder
+        print("Loading reranker model...")
+        _reranker_model = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+        print("Reranker loaded.")
+    return _reranker_model
+
+
+def rerank(query: str, candidate_chunks: list[str], top_n: int = 3):
+    model = _get_reranker()
     pairs = [(query, chunk) for chunk in candidate_chunks]
+    scores = model.predict(pairs)
 
-    scores = reranker_model.predict(pairs)
-
-    # Sort by score descending
     ranked = sorted(
         zip(candidate_chunks, scores),
         key=lambda x: x[1],
-        reverse=True
+        reverse=True,
     )
 
     top_chunks = [chunk for chunk, _ in ranked[:top_n]]
