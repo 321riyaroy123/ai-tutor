@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 
 from rag.reranker import rerank
 
-MODEL_PATH = "BAAI/bge-base-en-v1.5"
+MODEL_PATH = "sentence-transformers/all-MiniLM-L6-v2"
 EMBEDDINGS_DIR = Path("embeddings")
 
 
