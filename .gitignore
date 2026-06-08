@@ -13,7 +13,6 @@ AI-tutor/
 data/
 models/
 logs/
-embeddings/
 faiss_db/
 rag_db/
 *.pdf
