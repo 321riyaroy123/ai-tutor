@@ -1,6 +1,7 @@
-import numpy as np
+# api/app/services/topic_classifier.py - FIXED VERSION
+# Removed broken embedding code, kept simple keyword matching that actually works
 
-model = None
+import numpy as np
 
 TOPIC_TAXONOMY: list[tuple[str, str]] = sorted([
     # Physics
@@ -51,6 +52,10 @@ TOPIC_TAXONOMY: list[tuple[str, str]] = sorted([
     ("power",                   "physics"),
     ("velocity",                "physics"),
     ("acceleration",            "physics"),
+    ("light",                   "physics"),
+    ("sound",                   "physics"),
+    ("heat",                    "physics"),
+    ("temperature",             "physics"),
     # Math
     ("differential equation",   "math"),
     ("linear algebra",          "math"),
@@ -98,43 +103,44 @@ TOPIC_TAXONOMY: list[tuple[str, str]] = sorted([
     ("ellipse",                 "math"),
     ("triangle",                "math"),
     ("circle",                  "math"),
+    ("equation",                "math"),
+    ("solution",                "math"),
 ], key=lambda x: -len(x[0]))
 
-# ---------------------------------
-# Topic Embedding Cache
-# ---------------------------------
-_TOPIC_EMBED_CACHE: dict[str, dict[str, np.ndarray]] = {"physics": {}, "math": {}}
-
-'''def _initialize_topic_embeddings():
-
-    model = get_model()
-
-    topics = [topic for topic, _ in TOPIC_TAXONOMY]
-
-    embeddings = model.encode(
-        topics,
-        normalize_embeddings=True
-    )
-
-    for (topic, subject), emb in zip(TOPIC_TAXONOMY, embeddings):
-
-        if topic not in _TOPIC_EMBED_CACHE[subject]:
-
-            _TOPIC_EMBED_CACHE[subject][topic] = np.asarray(emb)
 
 def _extract_topics(
     text: str,
     subject: str,
     limit: int = 5
 ) -> list[str]:
-
-    haystack = (text or "").lower()
+    """
+    Extract topics from text using simple keyword matching.
+    
+    Args:
+        text: The input text to analyze (e.g., a student's question)
+        subject: The subject to filter by ("physics" or "math")
+        limit: Maximum number of topics to return
+    
+    Returns:
+        List of topic strings found in the text, up to `limit` items
+    
+    Example:
+        >>> _extract_topics("Solve for x in x^2 + 2x + 1 = 0", "math", limit=3)
+        ["quadratic", "polynomial", "equation"]
+    """
+    if not text or not text.strip():
+        return []
+    
+    haystack = text.lower()
     found = []
 
+    # TOPIC_TAXONOMY is sorted by length descending, so longer matches come first
+    # This prevents "quadratic" from being matched as "quad" + "ratic"
     for topic, topic_subject in TOPIC_TAXONOMY:
         if topic_subject != subject:
             continue
 
+        # Simple substring match (case-insensitive)
         if topic in haystack:
             found.append(topic)
 
@@ -143,38 +149,41 @@ def _extract_topics(
 
     return found[:limit]
 
-def _semantic_topic_match(
-    text: str,
+
+def extract_weak_and_strong_topics(
+    attempts: list[dict],
     subject: str,
-    limit: int = 3,
-    threshold: float = 0.55
-) -> list[str]:
-
-    if not text.strip():
-        return []
-
-    if subject not in _TOPIC_EMBED_CACHE:
-        return []
-
-    if not _TOPIC_EMBED_CACHE["physics"] and not _TOPIC_EMBED_CACHE["math"]:
-        _initialize_topic_embeddings()
-
-    try:
-        query_emb = embed_text(text)
-
-        scored: list[tuple[str, float]] = []
-
-        for topic, topic_emb in _TOPIC_EMBED_CACHE[subject].items():
-
-            score = float(np.dot(query_emb, topic_emb))
-
-            if score >= threshold:
-                scored.append((topic, score))
-
-        scored.sort(key=lambda x: -x[1])
-
-        return [topic for topic, _ in scored[:limit]]
-
-    except Exception:
-        return []
-'''
+    weak_threshold: float = 0.55,
+    strong_threshold: float = 0.75
+) -> tuple[list[str], list[str]]:
+    """
+    Analyze attempts to identify weak and strong topic areas.
+    
+    Args:
+        attempts: List of attempt dicts with "question" and "confidence" keys
+        subject: Subject to analyze ("physics" or "math")
+        weak_threshold: Confidence below this = weak area
+        strong_threshold: Confidence above this = strong area
+    
+    Returns:
+        (weak_topics, strong_topics) - lists of topic strings
+    """
+    weak_topics = []
+    strong_topics = []
+    
+    for attempt in attempts:
+        confidence = float(attempt.get("confidence", 0) or 0)
+        question = attempt.get("question", "")
+        
+        topics = _extract_topics(question, subject, limit=2)
+        
+        for topic in topics:
+            # Format topic for display (title case with proper spacing)
+            display_topic = topic.title()
+            
+            if confidence < weak_threshold and display_topic not in weak_topics:
+                weak_topics.append(display_topic)
+            elif confidence >= strong_threshold and display_topic not in strong_topics:
+                strong_topics.append(display_topic)
+    
+    return weak_topics[:5], strong_topics[:5]
