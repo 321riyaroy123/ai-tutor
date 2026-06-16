@@ -21,24 +21,25 @@ class AskRequest(BaseModel):
     student_level: str = "intermediate"
 
 
-def _format_conversation_context(user_id: str) -> str:
-    history = get_history(user_id)
+async def _format_conversation_context(user_id: str) -> str:
+    history = await get_history(user_id)
 
     if not history:
         return ""
 
-    lines: list[str] = []
+    lines = []
+
     for item in history:
         question = item.get("question", "").strip()
         answer = item.get("answer", "").strip()
 
         if question:
             lines.append(f"Student: {question}")
+
         if answer:
             lines.append(f"Tutor: {answer}")
 
     return "\n".join(lines)
-
 
 def _get_subject_retriever(subject: str):
     from rag.subject_retriever import SubjectRetriever
@@ -93,7 +94,7 @@ async def ask_tutor(
             detail=str(error),
         ) from error
 
-    conversation_context = _format_conversation_context(chat_id)
+    conversation_context = await _format_conversation_context(chat_id)
 
     try:
         answer, model_used, confidence = _generate_answer(
@@ -111,7 +112,7 @@ async def ask_tutor(
 
     latency_seconds = round(perf_counter() - start, 3)
 
-    add_to_history(chat_id, question, answer)
+    await add_to_history(chat_id, question, answer)
 
     attempt_document = {
         "user_email": current_user,
