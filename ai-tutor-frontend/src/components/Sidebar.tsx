@@ -25,7 +25,7 @@ export default function Sidebar() {
 >
   <span
       style={{
-        fontFamily: "Merriweather,Georgia,serif",
+        fontFamily: "Playfair Display,Georgia,serif",
         fontSize: "1.25rem",
         fontWeight: 700,
         background: "var(--primary-gradient)",
@@ -59,7 +59,7 @@ export default function Sidebar() {
           <span style={{ fontSize:"1.05rem", width:"20px", textAlign:"center", flexShrink:0 }}>{dark ? "☀" : "☾"}</span>
           {dark ? "Light Mode" : "Dark Mode"}
         </button>
-        <button type="button" onClick={() => { localStorage.removeItem("token"); navigate("/") }} className="nav-item"
+        <button type="button" onClick={() => { localStorage.removeItem("token"); navigate("/login") }} className="nav-item"
           style={{ width:"100%", cursor:"pointer", background:"none", border:"1px solid transparent", color:"#ef4444" }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)" }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "none" }}>

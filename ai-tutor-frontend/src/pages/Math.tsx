@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import axios from "axios"
-import Layout from "../components/Layout"
+import ChatShell from "../components/ChatShell"
 import ChatInput from "../components/ChatInput"
 import ChatMessage from "../components/ChatMessage"
 import { defaultAnalytics } from "../components/AnalyticsPanel"
@@ -29,6 +29,7 @@ export default function Math() {
       content: "Hello, I am your Math tutor. Which concept would you like to work on?",
     },
   ])
+  const [recentTopics, setRecentTopics] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [analytics, setAnalytics] = useState<AnalyticsData>(defaultAnalytics)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -38,6 +39,7 @@ export default function Math() {
     if (!token || !chatId || chatId === "new") return
 
     setMessages((prev) => [...prev, { role: "user", content: message }])
+    setRecentTopics((prev) => [message.slice(0, 40), ...prev].slice(0, 5))
     setLoading(true)
     setAnalytics((prev) => ({ ...prev, isLoading: true }))
 
@@ -92,23 +94,19 @@ export default function Math() {
   if (!chatId || chatId === "new") return null
 
   return (
-    <Layout analytics={analytics}>
-      <h1 className="mb-6 text-3xl">Math Tutor</h1>
+    <ChatShell title="Math" recentTopics={recentTopics} analytics={analytics}>
+      <div className="chat-scrollbar" style={{ flex: 1, overflowY: "auto", padding: "1.5rem 2rem" }}>
+        {messages.map((msg, index) => (
+          <ChatMessage key={index} role={msg.role} content={msg.content} />
+        ))}
 
-      <div className="academic-card flex h-[75vh] flex-col">
-        <div className="chat-scrollbar flex-1 overflow-y-auto p-6">
-          {messages.map((msg, index) => (
-            <ChatMessage key={index} role={msg.role} content={msg.content} />
-          ))}
-
-          {loading && <ChatMessage role="assistant" content="Thinking..." />}
-          <div ref={bottomRef} />
-        </div>
-
-        <div className="p-4 pt-0">
-          <ChatInput onSend={handleSend} placeholder="Ask a math question..." />
-        </div>
+        {loading && <ChatMessage role="assistant" content="Thinking..." />}
+        <div ref={bottomRef} />
       </div>
-    </Layout>
+
+      <div style={{ padding: "0 2rem 1.5rem", maxWidth: "48rem", margin: "0 auto", width: "100%" }}>
+        <ChatInput onSend={handleSend} placeholder="Ask a math question..." />
+      </div>
+    </ChatShell>
   )
 }

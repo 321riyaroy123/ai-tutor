@@ -187,7 +187,7 @@ const CHAT_STYLES = `
   .chat-md strong      { font-weight: 700; }
   .chat-md em          { font-style: italic; }
   .chat-md blockquote  {
-    border-left: 3px solid rgba(28,111,248,0.45);
+    border-left: 3px solid rgba(224,124,234,0.45);
     margin: 0.4em 0; padding: 0.2em 0.85em; opacity: 0.82;
   }
 

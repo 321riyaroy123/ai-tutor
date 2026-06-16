@@ -49,7 +49,9 @@ export default function Login() {
         transition={{ duration: 0.5 }}
         className="academic-card w-full max-w-md p-8 sm:p-10"
       >
-        <h1 className="mb-2 text-center text-4xl">AI Tutor</h1>
+        <h1 className="mb-2 text-center text-4xl">
+          Stella<span className="text-gradient-primary">AI</span>
+        </h1>
         <p className="mb-7 text-center text-sm text-[var(--text-soft)]">
           Sign in to continue your study sessions.
         </p>
@@ -95,6 +97,14 @@ export default function Login() {
             className="btn-outline w-full"
           >
             Create Account
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            style={{ width: "100%", background: "none", border: "none", color: "var(--text-muted)", fontSize: "0.85rem", cursor: "pointer", padding: "0.3rem" }}
+          >
+            ← Back to home
           </button>
         </div>
       </motion.div>

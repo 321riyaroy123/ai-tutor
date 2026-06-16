@@ -9,38 +9,38 @@ import {
   setFontScale,
 } from "../lib/uiPreferences"
 
-// ─── Gradient themes ───────────────────────────────────────────────────────
+// ─── Gradient themes (built from the custom palette) ───────────────────────
 const GRADIENT_THEMES = [
   {
-    id:       "oceanic",
-    label:    "Oceanic",
-    gradient: "linear-gradient(135deg, #0974F1, #2F6364)",
-    preview:  ["#0974F1", "#2F6364"],
+    id:       "orchid",
+    label:    "Orchid",
+    gradient: "linear-gradient(135deg, #E07CEA, #D089E6)",
+    preview:  ["#E07CEA", "#D089E6"],
   },
   {
-    id:       "lavender",
-    label:    "Lavender",
-    gradient: "linear-gradient(135deg, #696EFF, #F8ACFF)",
-    preview:  ["#696EFF", "#F8ACFF"],
+    id:       "blossom",
+    label:    "Blossom",
+    gradient: "linear-gradient(135deg, #FFC0ED, #D089E6)",
+    preview:  ["#FFC0ED", "#D089E6"],
   },
   {
-    id:       "lemon",
-    label:    "Lemon",
-    gradient: "linear-gradient(135deg, #5CB270, #F4F269)",
-    preview:  ["#5CB270", "#F4F269"],
+    id:       "skyline",
+    label:    "Skyline",
+    gradient: "linear-gradient(135deg, #7C8CFF, #D089E6)",
+    preview:  ["#7C8CFF", "#D089E6"],
   },
   {
-    id:       "midnight",
-    label:    "Midnight",
-    gradient: "linear-gradient(135deg, #103783, #9BAFD9)",
-    preview:  ["#103783", "#9BAFD9"],
+    id:       "meadow",
+    label:    "Meadow",
+    gradient: "linear-gradient(135deg, #8EF0C4, #FFD86E)",
+    preview:  ["#8EF0C4", "#FFD86E"],
   },
 ] as const
 
 type GradientId = (typeof GRADIENT_THEMES)[number]["id"]
 
 function getStoredGradient(): GradientId {
-  return (localStorage.getItem("gradientTheme") as GradientId) ?? "oceanic"
+  return (localStorage.getItem("gradientTheme") as GradientId) ?? "orchid"
 }
 
 function applyGradientTheme(id: GradientId) {
@@ -122,7 +122,7 @@ export default function Settings() {
                   aria-pressed={isActive}
                   className={`group relative flex flex-col items-center gap-2 rounded-xl border-2 p-3 transition-all duration-200
                     ${isActive
-                      ? "border-[var(--primary-gradient)] shadow-glow scale-[1.03]"
+                      ? "shadow-glow scale-[1.03]"
                       : "border-[var(--surface-border)] hover:border-[var(--text-muted)] hover:scale-[1.01]"
                     }`}
                   style={isActive ? { borderColor: theme.preview[0] } : undefined}
@@ -196,7 +196,7 @@ export default function Settings() {
             step={0.05}
             value={fontScale}
             onChange={(e) => handleScaleChange(Number(e.target.value))}
-            className="w-full accent-brandTeal"
+            className="w-full accent-brandIndigo"
             aria-label="Font scale slider"
           />
 
@@ -209,7 +209,7 @@ export default function Settings() {
         <section className="academic-card p-6">
           <h2 className="text-xl">Dyslexia-Friendly Text</h2>
           <p className="mb-5 mt-1 text-sm text-[var(--text-soft)]">
-            Switches to Atkinson Hyperlegible with increased letter-spacing and line-height
+            Switches to Lexend with increased letter-spacing and line-height
             throughout the app.
           </p>
           <button

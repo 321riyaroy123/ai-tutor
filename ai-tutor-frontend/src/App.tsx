@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import Landing from "./pages/Landing"
 import Login from "./pages/Login"
 import Dashboard from "./pages/Dashboard"
 import Physics from "./pages/Physics"
@@ -9,7 +10,7 @@ import Settings from "./pages/Settings"
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem("token")
-  if (!token) return <Navigate to="/" replace />
+  if (!token) return <Navigate to="/login" replace />
   return children
 }
 
@@ -18,7 +19,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Public */}
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         {/* Protected */}

@@ -47,11 +47,11 @@ const fallbackData: ProgressData = {
   physics: emptySubject, math: emptySubject,
 }
 
-// ── Palette for pie slices ────────────────────────────────────────────────────
+// ── Palette for pie slices (custom palette priority order) ───────────────────
 
 const PIE_COLORS = [
-  "#1c6ff8", "#27bbe0", "#31db92", "#ffd639",
-  "#9bfa24", "#fd9346", "#ff6200", "#b388ff",
+  "#E07CEA", "#D089E6", "#FFC0ED", "#7C8CFF",
+  "#8EF0C4", "#FFD86E", "#B85FC9", "#5C6AD8",
 ]
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -75,7 +75,7 @@ function ConfidenceBar({
   delay?: number
 }) {
   const pct = Math.round(value * 100)
-  const color = pct >= 70 ? "#31db92" : pct >= 45 ? "#ffd639" : "#fd9346"
+  const color = pct >= 70 ? "#8EF0C4" : pct >= 45 ? "#FFD86E" : "#E07CEA"
 
   return (
     <div>
@@ -188,11 +188,11 @@ function TopicPieChart({
         </Pie>
         <Tooltip
           contentStyle={{
-            background: "var(--card-bg)",
-            border: "1px solid var(--border-color)",
+            background: "var(--surface-0)",
+            border: "1px solid var(--surface-border)",
             borderRadius: "8px",
             fontSize: "12px",
-            color: "var(--text-primary)",
+            color: "var(--text-main)",
           }}
           formatter={(value, name) => {
             const safeValue = typeof value === "number" ? value : 0
@@ -218,18 +218,18 @@ const subjectMeta = {
   physics: {
     icon: "⚛",
     label: "Physics",
-    primaryGradient: "linear-gradient(90deg, #1c6ff8, #27bbe0, #31db92)",
-    accentColor: "#27BBE0",
-    weakColor: "#FD9346",
-    strongColor: "#31DB92",
+    primaryGradient: "linear-gradient(90deg, #7C8CFF, #D089E6, #E07CEA)",
+    accentColor: "#7C8CFF",
+    weakColor: "#FFD86E",
+    strongColor: "#8EF0C4",
   },
   math: {
     icon: "∑",
     label: "Math",
-    primaryGradient: "linear-gradient(90deg, #ffd639, #9bfa24, #27bbe0)",
-    accentColor: "#FFD639",
-    weakColor: "#FF6200",
-    strongColor: "#9BFA24",
+    primaryGradient: "linear-gradient(90deg, #FFD86E, #8EF0C4, #7C8CFF)",
+    accentColor: "#FFC0ED",
+    weakColor: "#E07CEA",
+    strongColor: "#8EF0C4",
   },
 } as const
 
@@ -349,7 +349,7 @@ export default function Progress() {
 
   useEffect(() => {
     const token = localStorage.getItem("token")
-    if (!token) { navigate("/"); return }
+    if (!token) { navigate("/login"); return }
 
     let cancelled = false
 

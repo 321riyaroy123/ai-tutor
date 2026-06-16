@@ -20,7 +20,7 @@ export default function Register() {
         password,
       })
 
-      navigate("/")
+      navigate("/login")
     } catch (err: any) {
       setError(err.response?.data?.detail || "Registration failed")
     }
@@ -78,7 +78,7 @@ export default function Register() {
           </button>
           <button
             type="button"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
             className="btn-outline w-full"
           >
             Back to Login

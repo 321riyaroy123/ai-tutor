@@ -8,29 +8,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        brandBlue:      "#1C6FF8",
-        brandCyan:      "#0FBED8",
-        brandTeal:      "#27BBE0",
-        brandNeonGreen: "#1BF118",
-        brandGreen:     "#31DB92",
-        brandLime:      "#9BFA24",
-        brandYellow:    "#FFD639",
-        brandGold:      "#FEF720",
-        brandMagenta:   "#FF00FF",
-        brandPurple:    "#8F00FF",
-        brandOrange:    "#FD9346",
+        brandOrchid:  "#E07CEA",
+        brandLilac:   "#D089E6",
+        brandPink:    "#FFC0ED",
+        brandIndigo:  "#7C8CFF",
+        brandMint:    "#8EF0C4",
+        brandGold:    "#FFD86E",
       },
       boxShadow: {
-        card: "0 4px 24px rgba(28,111,248,0.10), 0 1.5px 6px rgba(15,190,216,0.07)",
-        glow: "0 0 18px rgba(39,187,224,0.45), 0 0 6px rgba(28,111,248,0.25)",
-        "glow-green": "0 0 18px rgba(49,219,146,0.45)",
-        "glow-yellow": "0 0 18px rgba(255,214,57,0.45)",
-        "glow-purple": "0 0 18px rgba(143,0,255,0.35)",
+        card: "0 4px 24px rgba(224,124,234,0.14), 0 1.5px 6px rgba(124,140,255,0.08)",
+        glow: "0 0 18px rgba(208,137,230,0.45), 0 0 6px rgba(224,124,234,0.28)",
+        "glow-mint":   "0 0 18px rgba(142,240,196,0.45)",
+        "glow-gold":   "0 0 18px rgba(255,216,110,0.45)",
+        "glow-indigo": "0 0 18px rgba(124,140,255,0.40)",
       },
       fontFamily: {
-        serif:   ["Merriweather", "Georgia", "serif"],
-        sans:    ["Source Sans 3", "Segoe UI", "sans-serif"],
-        legible: ["Atkinson Hyperlegible", "Verdana", "sans-serif"],
+        serif:    ["Playfair Display", "Georgia", "serif"],
+        sans:     ["DM Sans", "Segoe UI", "sans-serif"],
+        legible:  ["Lexend", "Verdana", "sans-serif"],
       },
       keyframes: {
         shimmer: {

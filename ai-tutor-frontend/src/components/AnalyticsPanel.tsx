@@ -30,12 +30,12 @@ function StatRow({ label, value, delay = 0 }: { label: string; value: string; de
 export default function AnalyticsPanel({ data }: { data?: AnalyticsData }) {
   const d = data ?? defaultAnalytics
   const confPct = Math.round(d.confidence * 100)
-  const confColor = confPct >= 70 ? "#31db92" : confPct >= 45 ? "#ffd639" : "var(--text-muted)"
+  const confColor = confPct >= 70 ? "#8ef0c4" : confPct >= 45 ? "#ffd86e" : "var(--text-muted)"
 
   return (
     <aside className="animate-slide-right" style={{ width:"220px", minWidth:"220px", height:"100vh", position:"sticky", top:0, padding:"1.1rem 0.85rem", background:"var(--surface-0)", borderLeft:"1px solid var(--surface-border)", backdropFilter:"blur(20px)", zIndex:20, overflowY:"auto", display:"flex", flexDirection:"column" }}>
       <div style={{ marginBottom:"0.85rem" }}>
-        <span style={{ fontFamily:"Merriweather,Georgia,serif", fontSize:"1rem", fontWeight:700, background:"var(--primary-gradient)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", display:"block", lineHeight:1.2 }}>Response Analytics</span>
+        <span style={{ fontFamily:"Playfair Display,Georgia,serif", fontSize:"1rem", fontWeight:700, background:"var(--primary-gradient)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", display:"block", lineHeight:1.2 }}>Response Analytics</span>
         <p style={{ fontSize:"0.75rem", color:"var(--text-muted)", marginTop:"0.2rem" }}>Live session stats</p>
       </div>
       <div className="neon-divider" />
@@ -45,7 +45,7 @@ export default function AnalyticsPanel({ data }: { data?: AnalyticsData }) {
           <motion.span key={confPct} initial={{ scale:0.8, opacity:0 }} animate={{ scale:1, opacity:1 }} className="badge-glow" style={{ color:confColor, fontSize:"0.78rem" }}>{confPct}%</motion.span>
         </div>
         <div className="progress-bar-track">
-          <motion.div style={{ height:"8px", borderRadius:"99px", background:"linear-gradient(90deg,#1c6ff8,#27bbe0,#31db92,#27bbe0,#1c6ff8)", backgroundSize:"200% 100%", animation:confPct>0?"progressShimmer 3s linear infinite":"none" }} initial={{ width:0 }} animate={{ width:`${confPct}%` }} transition={{ duration:1, ease:[0.34,1.2,0.64,1] }} />
+          <motion.div style={{ height:"8px", borderRadius:"99px", background:"linear-gradient(90deg,#e07cea,#d089e6,#7c8cff,#d089e6,#e07cea)", backgroundSize:"200% 100%", animation:confPct>0?"progressShimmer 3s linear infinite":"none" }} initial={{ width:0 }} animate={{ width:`${confPct}%` }} transition={{ duration:1, ease:[0.34,1.2,0.64,1] }} />
         </div>
       </div>
       <StatRow label="Model Used" value={d.modelUsed && d.modelUsed !== "unknown" ? d.modelUsed : "-"} delay={0.05} />
