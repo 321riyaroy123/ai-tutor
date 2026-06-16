@@ -1,14 +1,6 @@
-from rag.models import get_embedding_model
 import numpy as np
-from rag.embedding_cache import embed_text
 
 model = None
-
-def get_model():
-    global model
-    if model is None:
-        model = get_embedding_model()
-    return model
 
 TOPIC_TAXONOMY: list[tuple[str, str]] = sorted([
     # Physics
@@ -113,7 +105,7 @@ TOPIC_TAXONOMY: list[tuple[str, str]] = sorted([
 # ---------------------------------
 _TOPIC_EMBED_CACHE: dict[str, dict[str, np.ndarray]] = {"physics": {}, "math": {}}
 
-def _initialize_topic_embeddings():
+'''def _initialize_topic_embeddings():
 
     model = get_model()
 
@@ -135,33 +127,19 @@ def _extract_topics(
     subject: str,
     limit: int = 5
 ) -> list[str]:
-    """Match text against taxonomy using keyword + semantic fallback."""
 
     haystack = (text or "").lower()
-    found: list[str] = []
+    found = []
 
-    # ---- Exact keyword match first (existing behavior preserved)
     for topic, topic_subject in TOPIC_TAXONOMY:
         if topic_subject != subject:
             continue
 
-        if topic in haystack and topic not in found:
+        if topic in haystack:
             found.append(topic)
 
         if len(found) >= limit:
-            return found
-
-    # ---- Semantic fallback only if nothing found
-    if not found:
-        semantic_matches = _semantic_topic_match(
-            text=text,
-            subject=subject,
-            limit=limit
-        )
-
-        for t in semantic_matches:
-            if t not in found:
-                found.append(t)
+            break
 
     return found[:limit]
 
@@ -199,3 +177,4 @@ def _semantic_topic_match(
 
     except Exception:
         return []
+'''

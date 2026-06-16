@@ -10,7 +10,6 @@ from rag.chunker import chunk_text
 
 EMBEDDINGS_DIR = Path("embeddings")
 
-
 def build_faiss_index(text_paths):
     """
     Builds ONE unified FAISS index from multiple textbooks.
@@ -41,10 +40,14 @@ def build_faiss_index(text_paths):
 
     embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
     texts = [f"passage: {chunk['text']}" for chunk in all_chunks]
-    embeddings = embedder.encode(
-        texts,
-        convert_to_numpy=True,
-        show_progress_bar=True,
+    
+    embeddings = np.asarray(
+        embedder.encode(
+            texts,
+            convert_to_numpy=True,
+            show_progress_bar=True,
+        ),
+        dtype=np.float32,
     )
 
     norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
@@ -52,6 +55,9 @@ def build_faiss_index(text_paths):
     embeddings = (embeddings / norms).astype(np.float32)
 
     index = faiss.IndexFlatIP(int(embeddings.shape[1]))
+    print(type(embeddings))
+    print(embeddings.shape)
+    print(embeddings.dtype)
     index.add(embeddings)
 
     faiss.write_index(index, str(EMBEDDINGS_DIR / "faiss_index.bin"))

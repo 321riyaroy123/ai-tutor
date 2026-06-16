@@ -5,15 +5,25 @@ from pathlib import Path
 
 import faiss
 import numpy as np
-from dotenv import load_dotenv
 
-load_dotenv(override=True)
+# Ensure repo root is on sys.path so absolute imports like `rag.chunker` work
+import os
+import sys
 
-from rag.chunker import chunk_text
-from rag.gemini_embedder import embed_passage
+_repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _repo_root not in sys.path:
+    sys.path.insert(0, _repo_root)
 
+# Try package-relative import first, then absolute
+try:
+    from .chunker import chunk_text
+except Exception:
+    from rag.chunker import chunk_text
+from sentence_transformers import SentenceTransformer
+
+MODEL_PATH = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDER = SentenceTransformer(MODEL_PATH)
 EMBEDDINGS_DIR = Path("embeddings")
-
 
 def build_subject_index(text_path: str, subject: str):
     print(f"Building index for {subject}...")
@@ -27,7 +37,10 @@ def build_subject_index(text_path: str, subject: str):
 
     embeddings = []
     for i, chunk in enumerate(chunks):
-        emb = embed_passage(chunk["text"])
+        emb = EMBEDDER.encode(
+            [f"passage: {chunk['text']}"],
+            convert_to_numpy=True,
+        )[0]
         embeddings.append(emb)
         if i % 50 == 0:
             print(f"  Embedded {i}/{len(chunks)}")

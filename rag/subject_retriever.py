@@ -42,16 +42,6 @@ class SubjectRetriever:
         if not final_chunks:
             return "", [], [], 0.0
 
-        rerank_texts = [chunk["text"] for chunk in candidate_chunks]
-        top_texts = rerank_texts[:final_k]
-
-        final_chunks = []
-        for text in top_texts:
-            for chunk in candidate_chunks:
-                if chunk["text"] == text:
-                    final_chunks.append(chunk)
-                    break
-
         context = "\n".join(chunk["text"] for chunk in final_chunks)
         pages = list({chunk.get("page", 0) for chunk in final_chunks})
         sources = list({chunk.get("source", "unknown") for chunk in final_chunks})
