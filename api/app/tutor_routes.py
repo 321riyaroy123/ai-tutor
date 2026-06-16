@@ -12,7 +12,7 @@ router = APIRouter(tags=["Tutor"])
 
 VALID_SUBJECTS = {"physics", "math"}
 RETRIEVERS = {}
-_LAST_SUBJECT: str | None = None
+
 
 class AskRequest(BaseModel):
     user_id: str
@@ -39,20 +39,15 @@ def _format_conversation_context(user_id: str) -> str:
 
     return "\n".join(lines)
 
+
 def _get_subject_retriever(subject: str):
-    global _LAST_SUBJECT
-
     from rag.subject_retriever import SubjectRetriever
-
-    # Evict the other subject's index to free RAM
-    if _LAST_SUBJECT and _LAST_SUBJECT != subject and _LAST_SUBJECT in RETRIEVERS:
-        del RETRIEVERS[_LAST_SUBJECT]
 
     if subject not in RETRIEVERS:
         RETRIEVERS[subject] = SubjectRetriever(subject)
 
-    _LAST_SUBJECT = subject
     return RETRIEVERS[subject]
+
 
 def _generate_answer(**kwargs):
     from rag.hybrid_generator import generate_answer
