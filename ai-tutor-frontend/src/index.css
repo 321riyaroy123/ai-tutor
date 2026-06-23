@@ -53,8 +53,8 @@
 /* .dark goes deeper for clear differentiation when toggled */
 .dark {
   --surface-0:        rgba(18, 12, 24, 0.96);
-  --surface-1:        rgba(24, 16, 32, 0.92);
-  --surface-2:        rgba(30, 20, 40, 0.84);
+  --surface-1:        rgba(236, 255, 248, 0.75);
+  --surface-2:        rgba(238, 243, 255, 0.75);
   --surface-border:   rgba(224, 124, 234, 0.30);
 
   --text-main:        #fbeefc;
@@ -73,7 +73,7 @@
     #160c1c
   );
 
-  --primary-gradient:   linear-gradient(120deg, #e07cea 0%, #d089e6 45%, #7c8cff 100%);
+  --primary-gradient: linear-gradient(120deg,#7c8cff 0%, #e07cea 55%,  #d089e6 100%);
   --secondary-gradient: linear-gradient(120deg, #8ef0c4 0%, #ffd86e 100%);
   --accent-gradient:    linear-gradient(120deg, #ffc0ed 0%, #7c8cff 100%);
 
@@ -335,7 +335,7 @@ p, label, span, li, input, textarea, button { color: inherit; }
   }
   .nav-item.active {
     color: var(--title-accent);
-    background: rgba(224, 124, 234, 0.14);
+    background: rgba(124,140,255,0.14);
     border-color: rgba(224, 124, 234, 0.28);
   }
   .nav-item.active::before {
