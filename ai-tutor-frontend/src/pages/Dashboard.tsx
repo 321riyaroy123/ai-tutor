@@ -1,39 +1,58 @@
 import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
+import AnalyticsPanel, { defaultAnalytics } from "../components/AnalyticsPanel"
+import Sidebar from "../components/Sidebar"
+import Stella from "../components/Stella"
 
-import Layout from "../components/Layout"
-
-type DashboardCard = {
-  title: string
-  description: string
-  route: string
-  icon: string
-}
-
-const cards: DashboardCard[] = [
+const stats = [
   {
-    title: "Physics Tutor",
-    description: "Explore mechanics, fields, and conceptual reasoning with guided steps.",
+    value: "14",
+    label: "Sessions",
+    note: "2 this week",
+    progress: 72,
+  },
+  {
+    value: "87%",
+    label: "Avg score",
+    note: "Climbing steadily",
+    progress: 87,
+  },
+  {
+    value: "6",
+    label: "Day streak",
+    note: "Best run this month",
+    progress: 60,
+  },
+  {
+    value: "3",
+    label: "Achievements",
+    note: "Focus, accuracy, speed",
+    progress: 48,
+  },
+]
+
+const cards = [
+  {
+    title: "Mechanics & Waves",
+    description: "Newton's laws, energy, and wave behavior with guided physics support.",
     route: "/physics/new",
-    icon: "\u269B",
+    icon: "P",
+    badge: "Physics",
+    accent: "rgba(184, 48, 96, 0.08)",
+    border: "rgba(184, 48, 96, 0.2)",
+    progress: 62,
+    footer: "62% · Chapter 4",
   },
   {
-    title: "Math Tutor",
-    description: "Practice algebra, calculus, and proofs with clear explanations.",
+    title: "Algebra & Calculus",
+    description: "Derivatives, integrals, and limits without losing the thread.",
     route: "/math/new",
-    icon: "\u2211",
-  },
-  {
-    title: "Progress Tracker",
-    description: "Review completion trends and confidence growth over recent sessions.",
-    route: "/progress",
-    icon: "\u25C8",
-  },
-  {
-    title: "Settings",
-    description: "Adjust dark mode, readable scaling, and dyslexia-friendly typography.",
-    route: "/settings",
-    icon: "\u2699",
+    icon: "M",
+    badge: "Math",
+    accent: "rgba(253, 216, 53, 0.12)",
+    border: "rgba(232, 155, 60, 0.28)",
+    progress: 45,
+    footer: "45% · Chapter 7",
   },
 ]
 
@@ -41,86 +60,186 @@ export default function Dashboard() {
   const navigate = useNavigate()
 
   return (
-    <Layout>
-      <div style={{ marginBottom: "1.1rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem" }}>
-        <motion.div
-          initial={{ opacity: 0, x: -16 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.38 }}
-        >
-          <h1 style={{ fontSize: "2.6rem", margin: "0 0 0.3rem" }}>
-            Welcome Back
-          </h1>
-          <p style={{ fontSize: "1rem", color: "var(--text-soft)", maxWidth: "460px", lineHeight: 1.5, margin: 0 }}>
-            Stella is ready to help you study — professional, focused, and always at your pace.
-          </p>
-        </motion.div>
-
-        <motion.div
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <div
-            className="stella-ring"
-            style={{ padding: "3px", borderRadius: "50%", boxShadow: "0 4px 20px rgba(224,124,234,0.35)" }}
-          >
-            <div
-              style={{
-                width: "70px", height: "70px", borderRadius: "50%",
-                background: "var(--surface-0)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                overflow: "hidden",
-              }}
+    <div className="app-shell sunrise-shell workspace-shell">
+      <Sidebar />
+      <main className="workspace-main">
+        <div className="workspace-stage chat-scrollbar" style={{ flex: 1, overflowY: "auto" }}>
+          <div className="dashboard-shell">
+            <motion.section
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="dashboard-hero"
             >
-              {"\u{1F993}"}
-            </div>
-          </div>
-        </motion.div>
-      </div>
+              <div style={{ display: "grid", gap: "1rem", maxWidth: "44rem" }}>
+                <span
+                  className="badge-glow"
+                  style={{
+                    width: "fit-content",
+                    background: "rgba(255,255,255,0.12)",
+                    borderColor: "rgba(255,255,255,0.2)",
+                    color: "#fff4dd",
+                  }}
+                >
+                  Monday morning
+                </span>
+                <div>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.08 }}
+                    style={{ color: "#fff6eb", fontSize: "clamp(2.3rem, 5vw, 3.8rem)", marginBottom: "0.7rem" }}
+                  >
+                    Good morning, Alex. Make this session <span className="sunrise-wordmark">Stellar</span>
+                  </motion.h1>
+                  <motion.p
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.14 }}
+                    style={{ margin: 0, color: "rgba(255, 244, 230, 0.82)", lineHeight: 1.75, maxWidth: "38rem" }}
+                  >
+                    You have a Physics session in progress. Stella is ready whenever you are, with a clearer study flow.
+                  </motion.p>
+                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  style={{ display: "flex", flexWrap: "wrap", gap: "0.85rem" }}
+                >
+                  <button type="button" className="btn-primary" onClick={() => navigate("/physics/new")}>
+                    Ask Stella now
+                  </button>
+                  <button type="button" className="btn-secondary" onClick={() => navigate("/progress")}>
+                    View progress
+                  </button>
+                </motion.div>
+              </div>
 
-      <div className="neon-divider" />
-
-      <div style={{ display: "grid", gap: "1.1rem", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
-        {cards.map((card, index) => (
-          <motion.section
-            key={card.title}
-            initial={{ opacity: 0, y: 18, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.32, delay: index * 0.07, ease: [0.34, 1.2, 0.64, 1] }}
-            className="academic-card"
-            style={{ padding: "1.4rem 1.5rem", display: "flex", flexDirection: "column" }}
-          >
-            <div style={{ marginBottom: "0.85rem", display: "flex", alignItems: "center", gap: "0.8rem" }}>
-              <span
-                style={{
-                  display: "flex", width: "44px", height: "44px",
-                  alignItems: "center", justifyContent: "center",
-                  borderRadius: "0.75rem", fontSize: "1.35rem", color: "#fff",
-                  backgroundImage: "var(--primary-gradient)",
-                  boxShadow: "0 2px 12px rgba(224,124,234,0.32)", flexShrink: 0,
-                }}
+              <div
                 aria-hidden="true"
+                style={{
+                  justifySelf: "end",
+                  alignSelf: "start",
+                  width: "5.5rem",
+                  height: "5.5rem",
+                  borderRadius: "999px",
+                  display: "grid",
+                  placeItems: "center",
+                  background: "linear-gradient(145deg, rgba(255,255,255,0.28), rgba(184,48,96,0.3))",
+                  boxShadow: "0 18px 38px rgba(97, 31, 23, 0.16)",
+                  color: "#fff8f0",
+                  fontSize: "1.7rem",
+                  fontWeight: 800,
+                  border: "1px solid rgba(255,255,255,0.16)",
+                }}
               >
-                {card.icon}
-              </span>
-              <h2 style={{ fontSize: "1.3rem", margin: 0 }}>{card.title}</h2>
-            </div>
+                AI
+              </div>
+            </motion.section>
 
-            <p style={{ fontSize: "0.92rem", color: "var(--text-soft)", lineHeight: 1.55, flex: 1, marginBottom: "1.1rem" }}>
-              {card.description}
-            </p>
+            <section className="dashboard-stat-grid">
+              {stats.map((stat, index) => (
+                <motion.article
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.08 + index * 0.06 }}
+                  className="academic-card"
+                  style={{ padding: "1.1rem 1.2rem", display: "grid", gap: "0.55rem" }}
+                >
+                  <div style={{ display: "grid", gap: "0.15rem" }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontFamily: "Fraunces, Georgia, serif",
+                        fontStyle: "italic",
+                        fontSize: "2rem",
+                        lineHeight: 1,
+                        color: "var(--sr-wine)",
+                        fontWeight: 800,
+                      }}
+                    >
+                      {stat.value}
+                    </p>
+                    <p style={{ margin: 0, fontSize: "0.92rem", fontWeight: 700 }}>{stat.label}</p>
+                  </div>
+                  <div className="progress-bar-track" style={{ height: "0.4rem", background: "rgba(184, 48, 96, 0.08)" }}>
+                    <div className="progress-bar-fill" style={{ width: `${stat.progress}%` }} />
+                  </div>
+                  <p style={{ margin: 0, color: "var(--sr-text-muted)", fontSize: "0.82rem" }}>{stat.note}</p>
+                </motion.article>
+              ))}
+            </section>
 
-            <button
-              type="button"
-              onClick={() => navigate(card.route)}
-              className="btn-primary"
-              style={{ width: "fit-content" }}
-            >
-              Open {"\u2192"}
-            </button>
-          </motion.section>
-        ))}
-      </div>
-    </Layout>
+            <section className="dashboard-study-grid">
+              {cards.map((card, index) => (
+                <motion.section
+                  key={card.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.18 + index * 0.08, duration: 0.45 }}
+                  className="academic-card"
+                  style={{
+                    padding: "1.35rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1rem",
+                    background: `linear-gradient(180deg, ${card.accent}, rgba(255,255,255,0.72))`,
+                    borderColor: card.border,
+                    minHeight: "12.75rem",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "3rem",
+                      height: "3rem",
+                      borderRadius: "0.9rem",
+                      display: "grid",
+                      placeItems: "center",
+                      background: "var(--sr-btn-gradient)",
+                      color: "#fff",
+                      fontSize: card.icon.length > 1 ? "0.85rem" : "1.1rem",
+                      fontWeight: 800,
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    {card.icon}
+                  </div>
+                  <div style={{ display: "grid", gap: "0.7rem" }}>
+                    <span className="badge-glow" style={{ width: "fit-content", margin: 0 }}>
+                      {card.badge}
+                    </span>
+                    <div>
+                      <h2 style={{ fontSize: "1.45rem", marginBottom: "0.45rem" }}>{card.title}</h2>
+                      <p style={{ margin: 0, color: "var(--sr-text-soft)", lineHeight: 1.7, fontSize: "0.93rem" }}>
+                        {card.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: "auto", display: "grid", gap: "0.6rem" }}>
+                    <div className="progress-bar-track" style={{ height: "0.45rem", background: "rgba(184, 48, 96, 0.08)" }}>
+                      <div className="progress-bar-fill" style={{ width: `${card.progress}%` }} />
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
+                      <p style={{ margin: 0, color: "var(--sr-text-muted)", fontSize: "0.84rem" }}>{card.footer}</p>
+                      <button
+                        type="button"
+                        className={card.badge === "RAG AI" ? "btn-secondary" : "btn-primary"}
+                        onClick={() => navigate(card.route)}
+                        style={{ width: "fit-content" }}
+                      >
+                        {card.badge === "RAG AI" ? "See progress" : "Open"}
+                      </button>
+                    </div>
+                  </div>
+                </motion.section>
+              ))}
+            </section>
+          </div>
+        </div>
+        <Stella />
+      </main>
+      <AnalyticsPanel data={defaultAnalytics} />
+    </div>
   )
 }

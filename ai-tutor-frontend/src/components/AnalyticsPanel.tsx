@@ -18,51 +18,84 @@ export const defaultAnalytics: AnalyticsData = {
   lastUpdated: null,
 }
 
-function StatRow({ label, value, delay = 0 }: { label: string; value: string; delay?: number }) {
+function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <motion.div initial={{ opacity:0, x:8 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.3, delay }} style={{ marginBottom:"0.85rem" }}>
-      <p style={{ fontSize:"0.72rem", color:"var(--text-muted)", marginBottom:"0.15rem", fontWeight:600, textTransform:"uppercase", letterSpacing:"0.05em" }}>{label}</p>
-      <p style={{ fontSize:"1rem", fontWeight:700, color:"var(--text-main)" }}>{value}</p>
-    </motion.div>
+    <div className="academic-panel" style={{ padding: "0.95rem" }}>
+      <p style={{ margin: "0 0 0.2rem", fontSize: "0.72rem", color: "var(--sr-text-muted)", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+        {label}
+      </p>
+      <p style={{ margin: 0, fontSize: "1rem", fontWeight: 700 }}>{value}</p>
+    </div>
   )
 }
 
 export default function AnalyticsPanel({ data }: { data?: AnalyticsData }) {
   const d = data ?? defaultAnalytics
-  const confPct = Math.round(d.confidence * 100)
-  const confColor = confPct >= 70 ? "#8ef0c4" : confPct >= 45 ? "#ffd86e" : "var(--text-muted)"
+  const confidence = Math.round(d.confidence * 100)
 
   return (
-    <aside className="animate-slide-right" style={{ width:"220px", minWidth:"220px", height:"100vh", position:"sticky", top:0, padding:"1.1rem 0.85rem", background:"var(--surface-0)", borderLeft:"1px solid var(--surface-border)", backdropFilter:"blur(20px)", zIndex:20, overflowY:"auto", display:"flex", flexDirection:"column" }}>
-      <div style={{ marginBottom:"0.85rem" }}>
-        <span style={{ fontFamily:"Playfair Display,Georgia,serif", fontSize:"1rem", fontWeight:700, background:"var(--primary-gradient)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", display:"block", lineHeight:1.2 }}>Response Analytics</span>
-        <p style={{ fontSize:"0.75rem", color:"var(--text-muted)", marginTop:"0.2rem" }}>Live session stats</p>
+    <aside className="workspace-analytics">
+      <div style={{ marginBottom: "1rem" }}>
+        <p style={{ margin: "0 0 0.25rem", color: "var(--sr-wine)", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+          Session analytics
+        </p>
+        <h2 style={{ fontSize: "1.45rem", marginBottom: "0.35rem" }}>Tutor response panel</h2>
+        <p style={{ margin: 0, fontSize: "0.86rem", color: "var(--sr-text-muted)", lineHeight: 1.6 }}>
+          Live confidence and performance stats for the current conversation.
+        </p>
       </div>
-      <div className="neon-divider" />
-      <div style={{ marginBottom:"1rem" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"0.4rem" }}>
-          <p style={{ fontSize:"0.72rem", color:"var(--text-muted)", fontWeight:600, textTransform:"uppercase", letterSpacing:"0.05em" }}>Confidence</p>
-          <motion.span key={confPct} initial={{ scale:0.8, opacity:0 }} animate={{ scale:1, opacity:1 }} className="badge-glow" style={{ color:confColor, fontSize:"0.78rem" }}>{confPct}%</motion.span>
+
+      <div className="academic-card" style={{ padding: "1rem", marginBottom: "1rem" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", marginBottom: "0.55rem" }}>
+          <p style={{ margin: 0, fontSize: "0.82rem", fontWeight: 700, color: "var(--sr-text-soft)" }}>Confidence</p>
+          <span className="badge-glow">{confidence}%</span>
         </div>
-        <div className="progress-bar-track">
-          <motion.div style={{ height:"8px", borderRadius:"99px", background:"linear-gradient(90deg,#e07cea,#d089e6,#7c8cff,#d089e6,#e07cea)", backgroundSize:"200% 100%", animation:confPct>0?"progressShimmer 3s linear infinite":"none" }} initial={{ width:0 }} animate={{ width:`${confPct}%` }} transition={{ duration:1, ease:[0.34,1.2,0.64,1] }} />
+        <div className="progress-bar-track" style={{ marginBottom: "0.65rem" }}>
+          <motion.div
+            className="progress-bar-fill"
+            initial={{ width: 0 }}
+            animate={{ width: `${confidence}%` }}
+            transition={{ duration: 0.8 }}
+          />
         </div>
+        <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--sr-text-muted)", lineHeight: 1.6 }}>
+          Stella reports how confident the current answer is, so you can revisit uncertain areas quickly.
+        </p>
       </div>
-      <StatRow label="Model Used" value={d.modelUsed && d.modelUsed !== "unknown" ? d.modelUsed : "-"} delay={0.05} />
-      <StatRow label="Latency" value={d.latency > 0 ? `${d.latency.toFixed(2)}s` : "-"} delay={0.10} />
-      <StatRow label="Tokens Used" value={d.tokensUsed > 0 ? d.tokensUsed.toLocaleString() : "-"} delay={0.15} />
+
+      <div style={{ display: "grid", gap: "0.8rem" }}>
+        <StatCard label="Model" value={d.modelUsed && d.modelUsed !== "unknown" ? d.modelUsed : "-"} />
+        <StatCard label="Latency" value={d.latency > 0 ? `${d.latency.toFixed(2)}s` : "-"} />
+        <StatCard label="Tokens" value={d.tokensUsed > 0 ? d.tokensUsed.toLocaleString() : "-"} />
+      </div>
+
       <AnimatePresence>
         {d.isLoading && (
-          <motion.div initial={{ opacity:0, y:4 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }} style={{ display:"flex", alignItems:"center", gap:"0.4rem", fontSize:"0.82rem", color:"var(--link-color)", fontWeight:600, marginBottom:"0.75rem" }}>
-            <span className="typing-dot" /><span className="typing-dot" /><span className="typing-dot" />
-            <span style={{ marginLeft:"0.25rem" }}>Processing</span>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            className="academic-panel"
+            style={{ padding: "0.9rem", marginTop: "1rem" }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", marginBottom: "0.4rem" }}>
+              <span className="typing-dot" />
+              <span className="typing-dot" />
+              <span className="typing-dot" />
+            </div>
+            <p style={{ margin: 0, color: "var(--sr-text-soft)", fontSize: "0.84rem" }}>
+              Stella is preparing a response.
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
-      <div style={{ flex:1 }} />
-      <div className="neon-divider" />
-      <div style={{ display:"flex", alignItems:"center", gap:"0.5rem", fontSize:"0.875rem", color:"var(--text-soft)", fontWeight:600 }}>
-        <span className="online-dot" />Tutor online
+
+      <div style={{ marginTop: "auto", paddingTop: "1rem" }}>
+        <div className="neon-divider" style={{ marginBottom: "1rem" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: "0.55rem", color: "var(--sr-text-soft)", fontWeight: 700 }}>
+          <span className="online-dot" />
+          Tutor online
+        </div>
       </div>
     </aside>
   )

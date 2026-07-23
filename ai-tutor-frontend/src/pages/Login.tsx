@@ -2,15 +2,15 @@ import { motion } from "framer-motion"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
+import ThemeToggle from "../components/ThemeToggle"
 import { getApiBaseUrl } from "../lib/api"
 
 export default function Login() {
   const navigate = useNavigate()
-
-  const [email,    setEmail]    = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error,    setError]    = useState("")
-  const [loading,  setLoading]  = useState(false)
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -37,75 +37,70 @@ export default function Login() {
     }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleLogin()
-  }
-
   return (
-    <div className="app-shell page-container flex items-center justify-center min-h-screen">
+    <div className="app-shell sunrise-shell auth-shell">
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="academic-card w-full max-w-md p-8 sm:p-10"
+        className="academic-card auth-card"
       >
-        <h1 className="mb-2 text-center text-4xl">
-          Stella<span className="text-gradient-primary">AI</span>
-        </h1>
-        <p className="mb-7 text-center text-sm text-[var(--text-soft)]">
-          Sign in to continue your study sessions.
-        </p>
+        <div style={{ background: "var(--sr-hero-gradient)", color: "#fff", padding: "2rem", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "100%" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "flex-start" }}>
+            <div>
+              <p style={{ margin: "0 0 0.35rem", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.72)" }}>
+                Sign in
+              </p>
+              <h1 style={{ color: "#fff", fontSize: "clamp(2.4rem, 5vw, 4rem)" }}>
+                Stay <span className="sunrise-wordmark">Stellar</span>
+              </h1>
+            </div>
+            <ThemeToggle compact />
+          </div>
 
-        <div className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="field-base w-full"
-            aria-label="Email"
-            autoComplete="email"
-          />
+          <p style={{ margin: "1rem 0 0", maxWidth: "32rem", lineHeight: 1.8, color: "rgba(255,255,255,0.78)" }}>
+            Return to your tutor workspace, reopen your subject flow, and keep your momentum without any friction.
+          </p>
+        </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="field-base w-full"
-            aria-label="Password"
-            autoComplete="current-password"
-          />
+        <div style={{ padding: "2rem", background: "var(--sr-bg-card-strong)" }}>
+          <h2 style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>Welcome back</h2>
+          <p style={{ margin: "0 0 1.5rem", color: "var(--sr-text-soft)" }}>
+            Sign in to continue your study sessions.
+          </p>
 
-          {error && (
-            <p className="text-red-500 text-sm" role="alert">{error}</p>
-          )}
+          <div style={{ display: "grid", gap: "1rem" }}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+              className="field-base"
+              autoComplete="email"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+              className="field-base"
+              autoComplete="current-password"
+            />
 
-          <button
-            onClick={handleLogin}
-            disabled={loading}
-            className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {loading ? "Signing in..." : "Login"}
-          </button>
+            {error && <p style={{ margin: 0, color: "#dc2626", fontSize: "0.9rem" }}>{error}</p>}
 
-          <button
-            type="button"
-            onClick={() => navigate("/register")}
-            className="btn-outline w-full"
-          >
-            Create Account
-          </button>
-
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            style={{ width: "100%", background: "none", border: "none", color: "var(--text-muted)", fontSize: "0.85rem", cursor: "pointer", padding: "0.3rem" }}
-          >
-            ← Back to home
-          </button>
+            <button type="button" className="btn-primary" onClick={handleLogin} disabled={loading}>
+              {loading ? "Signing in..." : "Login"}
+            </button>
+            <button type="button" className="btn-outline" onClick={() => navigate("/register")}>
+              Create account
+            </button>
+            <button type="button" className="btn-secondary" onClick={() => navigate("/")}>
+              Back to home
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>

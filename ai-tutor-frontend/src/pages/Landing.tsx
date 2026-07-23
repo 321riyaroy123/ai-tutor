@@ -6,11 +6,13 @@ import Footer from "../components/Footer"
 
 export default function Landing() {
   return (
-    <div className="app-shell">
+    <div className="app-shell sunrise-shell">
       <Navbar />
-      <HeroSection />
-      <FeaturesSection />
-      <CTASection />
+      <main>
+        <HeroSection />
+        <FeaturesSection />
+        <CTASection />
+      </main>
       <Footer />
     </div>
   )

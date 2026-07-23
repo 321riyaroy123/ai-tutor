@@ -5,6 +5,7 @@ __pycache__/
 # Virtual environments
 env/
 venv/
+ai-tutor-lovable/
 .ai-tutor/
 AI-tutor/
 *.env

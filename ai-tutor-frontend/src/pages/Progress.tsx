@@ -1,14 +1,12 @@
-﻿import { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend,
 } from "recharts"
-import ThemeToggle from "../components/ThemeToggle"
+import Layout from "../components/Layout"
 import { getApiBaseUrl } from "../lib/api"
-
-// ── Types ────────────────────────────────────────────────────────────────────
 
 interface SubjectStats {
   sessions: number
@@ -32,314 +30,183 @@ interface ProgressData {
   joinedAt: string
 }
 
-// ── Defaults ─────────────────────────────────────────────────────────────────
-
 const emptySubject: SubjectStats = {
-  sessions: 0, questions: 0, studyMinutes: 0,
-  confidence: 0, avgLatency: 0,
-  recentTopics: [], weakAreas: [], strongAreas: [],
+  sessions: 0,
+  questions: 0,
+  studyMinutes: 0,
+  confidence: 0,
+  avgLatency: 0,
+  recentTopics: [],
+  weakAreas: [],
+  strongAreas: [],
   weeklyActivity: [0, 0, 0, 0, 0, 0, 0],
   topicFrequency: {},
 }
 
 const fallbackData: ProgressData = {
-  userId: "—", overallStreak: 0, totalHours: 0, joinedAt: "",
-  physics: emptySubject, math: emptySubject,
+  userId: "-",
+  physics: emptySubject,
+  math: emptySubject,
+  overallStreak: 0,
+  totalHours: 0,
+  joinedAt: "",
 }
 
-// ── Palette for pie slices (custom palette priority order) ───────────────────
-
-const PIE_COLORS = [
-  "#E07CEA", "#D089E6", "#FFC0ED", "#7C8CFF",
-  "#8EF0C4", "#FFD86E", "#B85FC9", "#5C6AD8",
-]
-
-// ── Sub-components ────────────────────────────────────────────────────────────
+const pieColors = ["#7b3ff2", "#9d4eda", "#b83060", "#d8703d", "#f0982a", "#fdd835", "#f5caa5"]
 
 function StatPill({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="academic-panel p-3 text-center">
-      <p className="text-xl font-bold text-[var(--title-accent)]">{value}</p>
-      <p className="mt-0.5 text-xs text-[var(--text-muted)]">{label}</p>
-    </div>
-  )
-}
-
-function ConfidenceBar({
-  value,
-  gradient,
-  delay = 0,
-}: {
-  value: number
-  gradient: string
-  delay?: number
-}) {
-  const pct = Math.round(value * 100)
-  const color = pct >= 70 ? "#8EF0C4" : pct >= 45 ? "#FFD86E" : "#E07CEA"
-
-  return (
-    <div>
-      <div className="flex justify-between items-center mb-1">
-        <p className="text-sm font-semibold">Confidence Score</p>
-        <span className="badge-glow" style={{ color }}>{pct}%</span>
-      </div>
-      <div className="progress-bar-track">
-        <motion.div
-          className="h-2 rounded-full"
-          style={{ backgroundImage: gradient }}
-          initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.9, delay, ease: "easeOut" }}
-        />
-      </div>
-      <p className="mt-1 text-xs text-[var(--text-muted)]">
-        {pct >= 70
-          ? "Strong grasp of topics covered"
-          : pct >= 45
-            ? "Building understanding — keep going"
-            : "Early stage — more practice will help"}
-      </p>
-    </div>
-  )
-}
-
-function WeekBar({ counts }: { counts: number[] }) {
-  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-  const max = Math.max(...counts, 1)
-  return (
-    <div className="flex items-end gap-1.5 h-14">
-      {counts.map((c, i) => (
-        <div key={i} className="flex flex-col items-center gap-1 flex-1">
-          <motion.div
-            className="w-full rounded-sm"
-            style={{ backgroundImage: "var(--primary-gradient)" }}
-            initial={{ height: 0 }}
-            animate={{ height: `${(c / max) * 48}px` }}
-            transition={{ duration: 0.6, delay: i * 0.06, ease: "easeOut" }}
-          />
-          <span className="text-[9px] text-[var(--text-muted)]">{days[i]}</span>
-        </div>
-      ))}
+    <div className="academic-panel" style={{ padding: "1rem", textAlign: "center" }}>
+      <p style={{ margin: "0 0 0.25rem", fontSize: "1.2rem", fontWeight: 800 }}>{value}</p>
+      <p style={{ margin: 0, color: "var(--sr-text-muted)", fontSize: "0.8rem" }}>{label}</p>
     </div>
   )
 }
 
 function TagList({ items, color }: { items: string[]; color: string }) {
-  if (!items.length)
-    return <p className="text-xs text-[var(--text-muted)] italic">None recorded yet</p>
+  if (items.length === 0) {
+    return <p style={{ margin: 0, color: "var(--sr-text-muted)", fontSize: "0.84rem" }}>No data yet.</p>
+  }
+
   return (
-    <div className="flex flex-wrap gap-1.5 mt-1">
-      {items.map((t) => (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem" }}>
+      {items.map((item) => (
         <span
-          key={t}
-          className="rounded-full px-2.5 py-0.5 text-xs font-medium capitalize"
-          style={{ background: color + "22", color }}
+          key={item}
+          style={{
+            padding: "0.35rem 0.7rem",
+            borderRadius: "999px",
+            background: `${color}18`,
+            color,
+            fontSize: "0.8rem",
+            fontWeight: 700,
+          }}
         >
-          {t}
+          {item}
         </span>
       ))}
     </div>
   )
 }
 
-function TopicPieChart({
-  topicFrequency
-}: {
-  topicFrequency: Record<string, number>
-  accentColor: string
-}) {
-  const entries = Object.entries(topicFrequency)
+function WeekBar({ counts }: { counts: number[] }) {
+  const days = ["M", "T", "W", "T", "F", "S", "S"]
+  const max = Math.max(...counts, 1)
+  return (
+    <div style={{ display: "flex", gap: "0.45rem", alignItems: "flex-end", height: "84px" }}>
+      {counts.map((count, index) => (
+        <div key={`${days[index]}-${index}`} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "0.35rem" }}>
+          <motion.div
+            style={{
+              width: "100%",
+              borderRadius: "999px",
+              background: "var(--sr-btn-gradient)",
+            }}
+            initial={{ height: 0 }}
+            animate={{ height: `${18 + (count / max) * 50}px` }}
+            transition={{ duration: 0.5, delay: index * 0.05 }}
+          />
+          <span style={{ fontSize: "0.7rem", color: "var(--sr-text-muted)" }}>{days[index]}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
 
+function TopicChart({ frequency }: { frequency: Record<string, number> }) {
+  const entries = Object.entries(frequency)
   if (entries.length === 0) {
-    return (
-      <p className="text-xs text-[var(--text-muted)] italic py-4 text-center">
-        No topic data yet — start asking questions!
-      </p>
-    )
+    return <p style={{ margin: 0, color: "var(--sr-text-muted)", fontSize: "0.84rem" }}>No topic data yet.</p>
   }
 
-  const data = entries.map(([name, value]) => ({
-    name: name
-      .split(" ")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" "),
-    value,
-  }))
+  const data = entries.map(([name, value]) => ({ name, value }))
 
   return (
     <ResponsiveContainer width="100%" height={220}>
       <PieChart>
-        <Pie
-          data={data}
-          cx="50%"
-          cy="50%"
-          innerRadius={55}
-          outerRadius={85}
-          paddingAngle={3}
-          dataKey="value"
-        >
+        <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={54} outerRadius={84} paddingAngle={3}>
           {data.map((_, index) => (
-            <Cell
-              key={index}
-              fill={PIE_COLORS[index % PIE_COLORS.length]}
-              opacity={0.9}
-            />
+            <Cell key={index} fill={pieColors[index % pieColors.length]} />
           ))}
         </Pie>
         <Tooltip
           contentStyle={{
-            background: "var(--surface-0)",
-            border: "1px solid var(--surface-border)",
-            borderRadius: "8px",
-            fontSize: "12px",
-            color: "var(--text-main)",
-          }}
-          formatter={(value, name) => {
-            const safeValue = typeof value === "number" ? value : 0
-            return [
-              `${safeValue} question${safeValue !== 1 ? "s" : ""}`,
-              name
-            ]
+            background: "var(--sr-bg-card-strong)",
+            border: "1px solid var(--sr-card-border)",
+            borderRadius: "12px",
+            color: "var(--sr-text-ink)",
           }}
         />
-        <Legend
-          iconType="circle"
-          iconSize={8}
-          wrapperStyle={{ fontSize: "11px", paddingTop: "8px" }}
-        />
+        <Legend wrapperStyle={{ fontSize: "12px" }} />
       </PieChart>
     </ResponsiveContainer>
   )
 }
 
-// ── Subject Meta ──────────────────────────────────────────────────────────────
-
-const subjectMeta = {
-  physics: {
-    icon: "⚛",
-    label: "Physics",
-    primaryGradient: "linear-gradient(90deg, #7C8CFF, #D089E6, #E07CEA)",
-    accentColor: "#7C8CFF",
-    weakColor: "#FFD86E",
-    strongColor: "#8EF0C4",
-  },
-  math: {
-    icon: "∑",
-    label: "Math",
-    primaryGradient: "linear-gradient(90deg, #FFD86E, #8EF0C4, #7C8CFF)",
-    accentColor: "#FFC0ED",
-    weakColor: "#E07CEA",
-    strongColor: "#8EF0C4",
-  },
-} as const
-
-// ── Subject Report Card ───────────────────────────────────────────────────────
-
-function SubjectReport({
-  subject,
-  stats,
-  index,
-}: {
-  subject: keyof typeof subjectMeta
-  stats: SubjectStats
-  index: number
-}) {
-  const meta = subjectMeta[subject]
-  const studyH = Math.round((stats.studyMinutes / 60) * 10) / 10
+function SubjectReport({ label, icon, stats }: { label: string; icon: string; stats: SubjectStats }) {
+  const confidence = Math.round(stats.confidence * 100)
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.12 }}
-      className="academic-card p-6 col-span-full"
-    >
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-5">
-        <span
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-xl"
-          style={{ backgroundImage: meta.primaryGradient, color: "#fff" }}
-        >
-          {meta.icon}
-        </span>
+    <section className="academic-card" style={{ padding: "1.4rem" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.8rem", marginBottom: "1rem" }}>
+        <div style={{ width: "3rem", height: "3rem", borderRadius: "1rem", background: "var(--sr-btn-gradient)", color: "#fff", display: "grid", placeItems: "center", fontSize: "1.2rem" }}>
+          {icon}
+        </div>
         <div>
-          <h2 className="text-2xl">{meta.label} Tutor</h2>
-          <p className="text-xs text-[var(--text-muted)]">Personalised performance report</p>
+          <h2 style={{ fontSize: "1.5rem", marginBottom: "0.15rem" }}>{label}</h2>
+          <p style={{ margin: 0, color: "var(--sr-text-muted)", fontSize: "0.84rem" }}>Performance report</p>
         </div>
       </div>
 
-      <div className="neon-divider mb-5" />
-
-      {/* Top stat row */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div style={{ display: "grid", gap: "0.8rem", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", marginBottom: "1rem" }}>
         <StatPill label="Sessions" value={stats.sessions} />
-        <StatPill label="Questions Asked" value={stats.questions} />
-        <StatPill label="Study Time" value={`${studyH}h`} />
+        <StatPill label="Questions" value={stats.questions} />
+        <StatPill label="Study hours" value={(stats.studyMinutes / 60).toFixed(1)} />
       </div>
 
-      {/* Confidence + weekly split */}
-      <div className="grid gap-6 sm:grid-cols-2 mb-6">
-        <div className="academic-panel p-4">
-          <ConfidenceBar
-            value={stats.confidence}
-            gradient={meta.primaryGradient}
-            delay={0.2 + index * 0.1}
-          />
+      <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", marginBottom: "1rem" }}>
+        <div className="academic-panel" style={{ padding: "1rem" }}>
+          <p style={{ margin: "0 0 0.45rem", fontWeight: 700 }}>Confidence</p>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.45rem" }}>
+            <span style={{ color: "var(--sr-text-muted)", fontSize: "0.84rem" }}>Current score</span>
+            <span className="badge-glow">{confidence}%</span>
+          </div>
+          <div className="progress-bar-track">
+            <motion.div className="progress-bar-fill" initial={{ width: 0 }} animate={{ width: `${confidence}%` }} transition={{ duration: 0.8 }} />
+          </div>
         </div>
-        <div className="academic-panel p-4">
-          <p className="text-sm font-semibold mb-3">Weekly Activity</p>
+
+        <div className="academic-panel" style={{ padding: "1rem" }}>
+          <p style={{ margin: "0 0 0.7rem", fontWeight: 700 }}>Weekly activity</p>
           <WeekBar counts={stats.weeklyActivity} />
         </div>
       </div>
 
-      {/* Topic distribution pie */}
-      <div className="academic-panel p-4 mb-6">
-        <p className="text-sm font-semibold mb-1">Topic Distribution</p>
-        <p className="text-xs text-[var(--text-muted)] mb-3">
-          Breakdown of topics you have asked about in this subject
+      <div className="academic-panel" style={{ padding: "1rem", marginBottom: "1rem" }}>
+        <p style={{ margin: "0 0 0.35rem", fontWeight: 700 }}>Topic distribution</p>
+        <p style={{ margin: "0 0 0.75rem", color: "var(--sr-text-muted)", fontSize: "0.84rem" }}>
+          Where your recent questions are clustering.
         </p>
-        <TopicPieChart
-          topicFrequency={stats.topicFrequency}
-          accentColor={meta.accentColor}
-        />
+        <TopicChart frequency={stats.topicFrequency} />
       </div>
 
-      {/* Recent topics + weak + strong */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="academic-panel p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-soft)] mb-2">
-            Recently Studied
-          </p>
-          <TagList items={stats.recentTopics} color={meta.accentColor} />
+      <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+        <div className="academic-panel" style={{ padding: "1rem" }}>
+          <p style={{ margin: "0 0 0.7rem", fontWeight: 700 }}>Recent topics</p>
+          <TagList items={stats.recentTopics} color="#9d4eda" />
         </div>
-        <div className="academic-panel p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-soft)] mb-2">
-            Needs More Practice
-          </p>
-          <TagList items={stats.weakAreas} color={meta.weakColor} />
-          {stats.weakAreas.length > 0 && (
-            <p className="mt-2 text-[10px] text-[var(--text-muted)] italic">
-              Based on sessions where confidence was below 55%
-            </p>
-          )}
+        <div className="academic-panel" style={{ padding: "1rem" }}>
+          <p style={{ margin: "0 0 0.7rem", fontWeight: 700 }}>Needs more practice</p>
+          <TagList items={stats.weakAreas} color="#d8703d" />
         </div>
-        <div className="academic-panel p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-soft)] mb-2">
-            Strong Areas
-          </p>
-          <TagList items={stats.strongAreas} color={meta.strongColor} />
-          {stats.strongAreas.length > 0 && (
-            <p className="mt-2 text-[10px] text-[var(--text-muted)] italic">
-              Based on sessions where confidence was 75%+
-            </p>
-          )}
+        <div className="academic-panel" style={{ padding: "1rem" }}>
+          <p style={{ margin: "0 0 0.7rem", fontWeight: 700 }}>Strong areas</p>
+          <TagList items={stats.strongAreas} color="#b83060" />
         </div>
       </div>
-    </motion.section>
+    </section>
   )
 }
-
-// ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function Progress() {
   const navigate = useNavigate()
@@ -349,7 +216,10 @@ export default function Progress() {
 
   useEffect(() => {
     const token = localStorage.getItem("token")
-    if (!token) { navigate("/login"); return }
+    if (!token) {
+      navigate("/login")
+      return
+    }
 
     let cancelled = false
 
@@ -360,83 +230,63 @@ export default function Progress() {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (cancelled) return
-
-        const payload = res.data
-        if (!payload || typeof payload !== "object") throw new Error("Invalid payload")
-
         setData({
           ...fallbackData,
-          ...payload,
-          physics: { ...emptySubject, ...payload.physics },
-          math: { ...emptySubject, ...payload.math },
+          ...res.data,
+          physics: { ...emptySubject, ...res.data.physics },
+          math: { ...emptySubject, ...res.data.math },
         })
       } catch {
-        if (!cancelled) {
-          setError("Could not load progress data — showing last known state.")
-          setData(fallbackData)
-        }
+        if (!cancelled) setError("Could not load progress data.")
       } finally {
         if (!cancelled) setLoading(false)
       }
     }
 
     loadProgress()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [navigate])
 
   const totalQuestions = data.physics.questions + data.math.questions
 
   return (
-    <div className="app-shell page-container">
-      {/* Header */}
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-3xl">Progress Tracker</h1>
-          <p className="mt-1 text-sm text-[var(--text-soft)]">
-            Your personalised learning report — updated after every session.
-          </p>
-          {error && (
-            <p className="mt-1 text-xs text-[var(--text-muted)] italic">{error}</p>
-          )}
-        </div>
-        <div className="flex gap-3">
-          <button type="button" className="btn-outline" onClick={() => navigate("/dashboard")}>
-            ← Dashboard
-          </button>
-          <ThemeToggle />
-        </div>
-      </div>
-
-      {/* Overall summary */}
-      <motion.section
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="academic-card p-6 mb-6"
-      >
-        <h2 className="text-xl mb-4">Overall Summary</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatPill label="Study Streak" value={loading ? "…" : `${data.overallStreak}d`} />
-          <StatPill label="Total Study Time" value={loading ? "…" : `${data.totalHours}h`} />
-          <StatPill label="Total Questions" value={loading ? "…" : totalQuestions} />
-          <StatPill label="Subjects Active" value={loading ? "…" :
-            [data.physics.sessions > 0 && "Physics", data.math.sessions > 0 && "Math"]
-              .filter(Boolean).join(" + ") || "—"
-          } />
+    <Layout>
+      <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: "1.2rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+          <div>
+            <p style={{ margin: "0 0 0.3rem", color: "var(--sr-wine)", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+              Progress
+            </p>
+            <h1 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", marginBottom: "0.45rem" }}>Your learning report</h1>
+            <p style={{ margin: 0, color: "var(--sr-text-soft)", maxWidth: "42rem" }}>
+              Review confidence, session patterns, and subject-specific momentum in one place.
+            </p>
+            {error && <p style={{ margin: "0.55rem 0 0", color: "#dc2626", fontSize: "0.9rem" }}>{error}</p>}
+          </div>
         </div>
       </motion.section>
 
-      {/* Per-subject reports */}
+      <section className="academic-card" style={{ padding: "1.3rem", marginBottom: "1rem" }}>
+        <div style={{ display: "grid", gap: "0.8rem", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))" }}>
+          <StatPill label="Streak" value={loading ? "..." : `${data.overallStreak}d`} />
+          <StatPill label="Study hours" value={loading ? "..." : `${data.totalHours}h`} />
+          <StatPill label="Questions" value={loading ? "..." : totalQuestions} />
+          <StatPill label="Subjects" value={loading ? "..." : "Physics + Math"} />
+        </div>
+      </section>
+
       {loading ? (
-        <div className="academic-card p-10 text-center text-[var(--text-muted)] animate-pulse">
-          Loading your progress…
+        <div className="academic-card" style={{ padding: "2rem", textAlign: "center", color: "var(--sr-text-muted)" }}>
+          Loading your progress...
         </div>
       ) : (
-        <div className="grid gap-6">
-          <SubjectReport subject="physics" stats={data.physics} index={0} />
-          <SubjectReport subject="math" stats={data.math} index={1} />
+        <div style={{ display: "grid", gap: "1rem" }}>
+          <SubjectReport label="Physics Tutor" icon="⚡" stats={data.physics} />
+          <SubjectReport label="Math Tutor" icon="∑" stats={data.math} />
         </div>
       )}
-    </div>
+    </Layout>
   )
 }

@@ -1,24 +1,20 @@
 import { useState } from "react"
 import { getTheme, toggleTheme } from "../lib/uiPreferences"
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ compact = false }: { compact?: boolean }) {
   const [theme, setTheme] = useState(getTheme())
-
-  const handleToggle = () => {
-    const nextTheme = toggleTheme()
-    setTheme(nextTheme)
-  }
 
   const isDark = theme === "dark"
 
   return (
     <button
       type="button"
-      onClick={handleToggle}
+      onClick={() => setTheme(toggleTheme())}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
-      className="btn-outline min-w-32 text-sm"
+      className={compact ? "btn-outline" : "btn-secondary"}
+      style={compact ? { padding: "0.72rem 1rem" } : undefined}
     >
-      {isDark ? "Light Mode" : "Dark Mode"}
+      {isDark ? "☀ Light" : "🌙 Dark"}
     </button>
   )
 }

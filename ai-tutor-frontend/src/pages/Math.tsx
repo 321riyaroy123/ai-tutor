@@ -104,8 +104,8 @@ export default function Math() {
         <div ref={bottomRef} />
       </div>
 
-      <div style={{ padding: "0 2rem 1.5rem", maxWidth: "48rem", margin: "0 auto", width: "100%" }}>
-        <ChatInput onSend={handleSend} placeholder="Ask a math question..." />
+      <div style={{ padding: "0 1rem 1rem", maxWidth: "56rem", margin: "0 auto", width: "100%" }}>
+        <ChatInput onSend={handleSend} placeholder="Ask a math question..." disabled={loading} />
       </div>
     </ChatShell>
   )

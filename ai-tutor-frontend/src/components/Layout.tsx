@@ -11,10 +11,12 @@ type LayoutProps = {
 
 export default function Layout({ children, analytics }: LayoutProps) {
   return (
-    <div className="app-shell" style={{ display:"flex", flexDirection:"row", minHeight:"100vh", width:"100%", alignItems:"stretch" }}>
+    <div className="app-shell sunrise-shell workspace-shell">
       <Sidebar />
-      <main style={{ flex:1, minWidth:0, position:"relative", overflowY:"auto", display:"flex", flexDirection:"column" }}>
-        <div className="page-container chat-scrollbar animate-fade-up" style={{ flex:1 }}>{children}</div>
+      <main className="workspace-main">
+        <div className="workspace-stage chat-scrollbar" style={{ flex: 1, overflowY: "auto" }}>
+          {children}
+        </div>
         <Stella />
       </main>
       <AnalyticsPanel data={analytics} />
