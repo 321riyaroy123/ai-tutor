@@ -310,7 +310,7 @@ export default function ChatShell({ title, recentTopics = [], analytics, childre
             }}
           >
             <div style={{ width: ANALYTICS_WIDTH, height: "100%" }}>
-              <AnalyticsPanel data={analytics} onClose={() => setAnalyticsOpen(false)} />
+              <AnalyticsPanel data={analytics}  />
             </div>
           </motion.div>
         )}
