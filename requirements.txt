@@ -1,6 +1,8 @@
 pip
 setuptools
 wheel
+pytest
+pytest-asyncio
 
 fastapi
 uvicorn
@@ -33,11 +35,13 @@ pdfplumber
 pdf2image
 pytesseract
 PyMuPDF
+python-multipart
 
 sympy
 tiktoken
 
 google-generativeai
+google-genai
 
 python-jose[cryptography]
 passlib[bcrypt]==1.7.4

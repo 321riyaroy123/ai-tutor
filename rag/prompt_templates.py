@@ -82,3 +82,63 @@ Question:
 
 Answer:
 """
+
+def build_evidence_extraction_prompt(
+    student_response: str,
+    concept_context: str,
+    ontology_context: str = "",
+) -> str:
+    return f"""
+You are an educational assessment system.
+
+Analyze the student's response and identify observable evidence
+about their understanding of the provided physics concepts.
+
+IMPORTANT RULES:
+
+1. Do NOT assign an overall mastery score.
+2. Do NOT invent concept IDs.
+3. Do NOT create new concepts.
+4. concept_id MUST be copied exactly from the provided ontology.
+5. Only report evidence that is supported by the student's response.
+6. If no valid evidence can be identified, return an empty evidence array.
+7. Return ONLY valid JSON.
+
+Allowed evidence_type values:
+- correct
+- partial
+- incorrect
+- uncertain
+- misconception
+
+For each evidence item:
+- concept_id must exactly match one of the provided ontology concept IDs.
+- evidence_strength must be between 0.0 and 1.0.
+- misconception_id should only be provided when supported by the ontology.
+- reasoning must briefly explain the observed evidence.
+- source must be "llm".
+
+Concept context:
+{concept_context}
+
+Ontology:
+{ontology_context}
+
+Student response:
+{student_response}
+
+Return exactly:
+
+{{
+  "evidence": [
+    {{
+      "concept_id": "EXACT_ONTOLOGY_ID",
+      "evidence_type": "correct",
+      "evidence_strength": 0.0,
+      "misconception_id": null,
+      "reasoning": "string",
+      "source": "llm"
+    }}
+  ]
+}}
+"""

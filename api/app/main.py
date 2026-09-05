@@ -5,7 +5,7 @@ import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.app.db import db, progress_collection
+from api.app.db import db, progress_collection, knowledge_states_collection, knowledge_evidence_collection, knowledge_history_collection
 from api.app.auth_routes import router as auth_router
 from api.app.ingest_routes import router as ingest_router
 from api.app.progress_routes import router as progress_router
@@ -53,9 +53,12 @@ app.include_router(tutor_router)
 # Startup Tasks
 # ----------------------------
 @app.on_event("startup")
-async def ensure_progress_collection():
+async def ensure_collections():
     existing = await db.list_collection_names()
 
+    # ----------------------------
+    # Progress collection
+    # ----------------------------
     if "progress" not in existing:
         await db.create_collection("progress")
 
@@ -65,6 +68,52 @@ async def ensure_progress_collection():
 
     await progress_collection.create_index(
         [("user_email", 1), ("created_at", -1)]
+    )
+
+    # ----------------------------
+    # Knowledge-state collections
+    # ----------------------------
+    if "knowledge_states" not in existing:
+        await db.create_collection("knowledge_states")
+
+    if "knowledge_evidence" not in existing:
+        await db.create_collection("knowledge_evidence")
+
+    if "knowledge_history" not in existing:
+        await db.create_collection("knowledge_history")
+
+    # ----------------------------
+    # Knowledge-state indexes
+    # ----------------------------
+
+    # One current knowledge state per user + subject
+    await knowledge_states_collection.create_index(
+        [("user_email", 1), ("subject", 1)],
+        unique=True,
+        name="unique_user_subject_state",
+    )
+
+    # Evidence lookup for a student
+    await knowledge_evidence_collection.create_index(
+        [("user_email", 1), ("subject", 1), ("created_at", -1)],
+        name="user_subject_evidence",
+    )
+
+    # History lookup for a student/concept
+    await knowledge_history_collection.create_index(
+        [
+            ("user_email", 1),
+            ("subject", 1),
+            ("concept_id", 1),
+            ("created_at", -1),
+        ],
+        name="user_concept_history",
+    )
+
+    # General history lookup
+    await knowledge_history_collection.create_index(
+        [("user_email", 1), ("subject", 1), ("created_at", -1)],
+        name="user_subject_history",
     )
 
 # ----------------------------
