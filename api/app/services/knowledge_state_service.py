@@ -366,7 +366,15 @@ async def process_evidence(
     )
 
     return {
-        "state": updated_state,
+        "state": {
+            "user_email": updated_state["user_email"],
+            "subject": updated_state["subject"],
+            "ontology_version": updated_state["ontology_version"],
+            "concepts": updated_state["concepts"],
+            "state_version": updated_state["state_version"],
+            "created_at": updated_state["created_at"],
+            "updated_at": updated_state["updated_at"],
+        },
         "evidence_id": evidence_id,
         "inference": inference_result,
     }

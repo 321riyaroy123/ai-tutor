@@ -7,12 +7,27 @@ from pydantic import BaseModel
 from api.app.db import chats_collection, progress_collection
 from api.app.dependencies import get_current_user
 from rag.memory import add_to_history, get_history
+from api.app.ontology.retriever import OntologyRetriever
+from api.app.services.knowledge_pipeline import process_student_response
+from api.app.services.interaction_context import InteractionContextBuilder
+from api.app.services.llm_evidence_extractor import LLMEvidenceExtractor
+from api.app.services.evidence_generator import generate_evidence_with_gemini
 
 router = APIRouter(tags=["Tutor"])
 
 VALID_SUBJECTS = {"physics", "math"}
 RETRIEVERS = {}
+INTERACTION_CONTEXT_BUILDERS = {}
+ONTOLOGY_RETRIEVER = OntologyRetriever()
+EVIDENCE_EXTRACTOR = LLMEvidenceExtractor(
+    generator=generate_evidence_with_gemini,
+)
 
+class EvaluateResponseRequest(BaseModel):
+    chat_id: str
+    subject: str
+    concept_id: str
+    student_response: str
 
 class AskRequest(BaseModel):
     user_id: str
@@ -20,6 +35,23 @@ class AskRequest(BaseModel):
     subject: str
     student_level: str = "intermediate"
 
+def _get_interaction_context_builder(subject: str):
+    """
+    Return the ontology-aware interaction context builder
+    for a supported subject.
+    """
+
+    if subject not in INTERACTION_CONTEXT_BUILDERS:
+        # Currently the ontology implementation is physics-specific.
+        # We will generalize this when subject ontologies are added.
+        if subject != "physics":
+            return None
+
+        INTERACTION_CONTEXT_BUILDERS[
+            subject
+        ] = InteractionContextBuilder()
+
+    return INTERACTION_CONTEXT_BUILDERS[subject]
 
 async def _format_conversation_context(user_id: str) -> str:
     history = await get_history(user_id)
@@ -93,9 +125,16 @@ async def ask_tutor(
             status_code=500,
             detail=str(error),
         ) from error
+    
+    interaction_context = None
+    context_builder = _get_interaction_context_builder(subject)
+    if context_builder is not None:
+        interaction_context = context_builder.build(
+            question
+        )
 
     conversation_context = await _format_conversation_context(chat_id)
-
+    
     try:
         answer, model_used, confidence = _generate_answer(
             context=context,
@@ -103,6 +142,11 @@ async def ask_tutor(
             base_confidence=base_confidence,
             student_level=req.student_level,
             conversation_context=conversation_context,
+            ontology_context=(
+                interaction_context.ontology_context
+                if interaction_context
+                else ""
+            ),
         )
     except Exception as error:
         raise HTTPException(
@@ -139,6 +183,16 @@ async def ask_tutor(
         "tokens_used": 0,
         "sources": sources,
         "pages": pages,
+        "concept_id": (
+            interaction_context.concept_id
+            if interaction_context
+            else None
+        ),
+        "concept_confidence": (
+            interaction_context.classification_confidence
+            if interaction_context
+            else 0.0
+        ),
     }
 
 
@@ -148,3 +202,68 @@ async def tutor_legacy_alias(
     current_user: str = Depends(get_current_user),
 ):
     return await ask_tutor(req, current_user)
+
+@router.post("/evaluate-response")
+async def evaluate_student_response(
+    req: EvaluateResponseRequest,
+    current_user: str = Depends(get_current_user),
+):
+    subject = req.subject.strip().lower()
+    concept_id = req.concept_id.strip()
+    student_response = req.student_response.strip()
+
+    if subject not in VALID_SUBJECTS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported subject: {subject}",
+        )
+
+    if subject != "physics":
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Knowledge-state evaluation is currently "
+                "supported only for physics."
+            ),
+        )
+
+    if not concept_id:
+        raise HTTPException(
+            status_code=400,
+            detail="concept_id is required.",
+        )
+
+    if not student_response:
+        raise HTTPException(
+            status_code=400,
+            detail="student_response is required.",
+        )
+
+    try:
+        result = await process_student_response(
+            user_email=current_user,
+            subject=subject,
+            student_response=student_response,
+            concept_id=concept_id,
+            evidence_extractor=EVIDENCE_EXTRACTOR,
+            ontology_retriever=ONTOLOGY_RETRIEVER,
+            interaction_id=req.chat_id,
+        )
+
+        return result
+
+    except ValueError as error:
+        raise HTTPException(
+            status_code=400,
+            detail=str(error),
+        ) from error
+
+    except Exception as error:
+        logger.exception(
+            "Knowledge evaluation failed"
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to evaluate student response.",
+        ) from error

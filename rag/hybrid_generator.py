@@ -12,16 +12,16 @@ def is_computational_math(question: str) -> bool:
     keywords = ["solve", "evaluate", "factor", "simplify", "find", "="]
     return any(keyword in question.lower() for keyword in keywords)
 
-
 def generate_answer(
     context: str,
     question: str,
     base_confidence: float,
     student_level: str = "intermediate",
     conversation_context: str = "",
+    ontology_context: str = "",
     confidence_threshold: float = 0.3,
     followup_mode=None,
-    use_flan_fallback: bool = False  # NEW: Control fallback
+    use_flan_fallback: bool = False,
 ) -> Tuple[str, str, float]:
     """
     Generate answer using Gemini (primary) with optional FLAN fallback.
@@ -78,6 +78,7 @@ def generate_answer(
             question,
             student_level,
             conversation_context,
+            ontology_context=ontology_context,
             mode=mode,
         )
 
@@ -177,6 +178,7 @@ def generate_answer_v2(
     base_confidence: float,
     student_level: str = "intermediate",
     conversation_context: str = "",
+    ontology_context: str = "",
     confidence_threshold: float = 0.3,
     followup_mode=None,
 ) -> Tuple[str, str, float]:
@@ -189,7 +191,8 @@ def generate_answer_v2(
         base_confidence=base_confidence,
         student_level=student_level,
         conversation_context=conversation_context,
+        ontology_context=ontology_context,
         confidence_threshold=confidence_threshold,
         followup_mode=followup_mode,
-        use_flan_fallback=USE_FLAN_FALLBACK  # Use global setting
+        use_flan_fallback=USE_FLAN_FALLBACK,
     )

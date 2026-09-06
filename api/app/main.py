@@ -10,6 +10,7 @@ from api.app.auth_routes import router as auth_router
 from api.app.ingest_routes import router as ingest_router
 from api.app.progress_routes import router as progress_router
 from api.app.tutor_routes import router as tutor_router
+from api.app.knowledge_routes import router as knowledge_router
 
 # ----------------------------
 # Windows multiprocessing fix
@@ -48,6 +49,7 @@ app.include_router(auth_router)
 app.include_router(ingest_router)
 app.include_router(progress_router)
 app.include_router(tutor_router)
+app.include_router(knowledge_router)
 
 # ----------------------------
 # Startup Tasks
