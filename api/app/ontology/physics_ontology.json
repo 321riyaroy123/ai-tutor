@@ -1,0 +1,820 @@
+{
+  "subject": "physics",
+  "version": "1.0",
+
+  "concepts": [
+    {
+      "concept_id": "measurement.units",
+      "name": "Units",
+      "description": "Standard units used to measure physical quantities.",
+      "chapter": 1,
+      "section": "1.2 Units and Standards for Physical Quantities",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 1, Section 1.2"
+      }
+    },
+
+    {
+      "concept_id": "measurement.unit_conversion",
+      "name": "Unit Conversion",
+      "description": "Converting a physical quantity between equivalent units.",
+      "chapter": 1,
+      "section": "1.3 Unit Conversion",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 1, Section 1.3"
+      }
+    },
+
+    {
+      "concept_id": "measurement.dimensional_analysis",
+      "name": "Dimensional Analysis",
+      "description": "Using physical dimensions to analyze equations and verify consistency.",
+      "chapter": 1,
+      "section": "1.4 Dimensional Analysis",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 1, Section 1.4"
+      }
+    },
+
+    {
+      "concept_id": "vectors.scalars",
+      "name": "Scalars",
+      "description": "Physical quantities described by magnitude without direction.",
+      "chapter": 2,
+      "section": "2.1 Scalars and Vectors",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 2"
+      }
+    },
+
+    {
+      "concept_id": "vectors.vectors",
+      "name": "Vectors",
+      "description": "Physical quantities described by both magnitude and direction.",
+      "chapter": 2,
+      "section": "2.1 Scalars and Vectors",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 2"
+      }
+    },
+
+    {
+      "concept_id": "vectors.components",
+      "name": "Vector Components",
+      "description": "Representing vectors using components along coordinate axes.",
+      "chapter": 2,
+      "section": "2.2 Coordinate Systems and Components of a Vector",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 2"
+      }
+    },
+
+    {
+      "concept_id": "vectors.vector_algebra",
+      "name": "Vector Algebra",
+      "description": "Adding, subtracting, and otherwise manipulating vectors.",
+      "chapter": 2,
+      "section": "2.3 Algebra of Vectors",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 2"
+      }
+    },
+
+    {
+      "concept_id": "kinematics.position",
+      "name": "Position",
+      "description": "The location of an object relative to a chosen reference frame.",
+      "chapter": 3,
+      "section": "3.1 Position, Displacement, and Average Velocity",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 3, Section 3.1"
+      }
+    },
+
+    {
+      "concept_id": "kinematics.displacement",
+      "name": "Displacement",
+      "description": "The change in position of an object.",
+      "chapter": 3,
+      "section": "3.1 Position, Displacement, and Average Velocity",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 3, Section 3.1"
+      }
+    },
+
+    {
+      "concept_id": "kinematics.velocity",
+      "name": "Velocity",
+      "description": "The rate of change of position with respect to time.",
+      "chapter": 3,
+      "section": "3.2 Instantaneous Velocity and Speed",
+      "misconceptions": [
+        {
+          "misconception_id": "velocity.speed_are_identical",
+          "description": "Treating velocity and speed as identical quantities.",
+          "provenance": {
+            "source": "OpenStax University Physics Volume 1",
+            "type": "manual",
+            "reference": "Chapter 3, Section 3.2"
+          }
+        }
+      ],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 3, Section 3.2"
+      }
+    },
+
+    {
+      "concept_id": "kinematics.speed",
+      "name": "Speed",
+      "description": "The magnitude associated with an object's velocity.",
+      "chapter": 3,
+      "section": "3.2 Instantaneous Velocity and Speed",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 3, Section 3.2"
+      }
+    },
+
+    {
+      "concept_id": "kinematics.acceleration",
+      "name": "Acceleration",
+      "description": "The rate of change of velocity with respect to time.",
+      "chapter": 3,
+      "section": "3.3 Average and Instantaneous Acceleration",
+      "misconceptions": [
+        {
+          "misconception_id": "acceleration.speed_increase_only",
+          "description": "Treating acceleration as meaning only that an object's speed is increasing.",
+          "provenance": {
+            "source": "OpenStax University Physics Volume 1",
+            "type": "manual",
+            "reference": "Chapter 3, Section 3.3"
+          }
+        }
+      ],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 3, Section 3.3"
+      }
+    },
+
+    {
+      "concept_id": "kinematics.constant_acceleration",
+      "name": "Constant Acceleration",
+      "description": "Motion in which acceleration remains constant over time.",
+      "chapter": 3,
+      "section": "3.4 Motion with Constant Acceleration",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 3, Section 3.4"
+      }
+    },
+
+    {
+      "concept_id": "kinematics.free_fall",
+      "name": "Free Fall",
+      "description": "Motion under the influence of gravitational acceleration near Earth's surface.",
+      "chapter": 3,
+      "section": "3.5 Free Fall",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 3, Section 3.5"
+      }
+    },
+
+    {
+      "concept_id": "kinematics.two_dimensional_motion",
+      "name": "Two-Dimensional Motion",
+      "description": "Motion described using position, velocity, and acceleration in two spatial dimensions.",
+      "chapter": 4,
+      "section": "Motion in Two and Three Dimensions",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 4"
+      }
+    },
+
+    {
+      "concept_id": "kinematics.projectile_motion",
+      "name": "Projectile Motion",
+      "description": "Two-dimensional motion of an object subject primarily to gravitational acceleration.",
+      "chapter": 4,
+      "section": "4.3 Projectile Motion",
+      "misconceptions": [
+        {
+          "misconception_id": "projectile.gravity_horizontal",
+          "description": "Assuming gravity provides a horizontal acceleration component in ideal projectile motion.",
+          "provenance": {
+            "source": "OpenStax University Physics Volume 1",
+            "type": "manual",
+            "reference": "Chapter 4"
+          }
+        }
+      ],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 4"
+      }
+    },
+
+    {
+      "concept_id": "dynamics.force",
+      "name": "Force",
+      "description": "An interaction capable of changing an object's motion.",
+      "chapter": 5,
+      "section": "Newton's Laws of Motion",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 5"
+      }
+    },
+
+    {
+      "concept_id": "dynamics.newtons_first_law",
+      "name": "Newton's First Law",
+      "description": "An object maintains its state of motion unless acted on by a net external force.",
+      "chapter": 5,
+      "section": "Newton's First Law",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 5"
+      }
+    },
+
+    {
+      "concept_id": "dynamics.newtons_second_law",
+      "name": "Newton's Second Law",
+      "description": "The net force on an object is related to its mass and acceleration.",
+      "chapter": 5,
+      "section": "Newton's Second Law",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 5"
+      }
+    },
+
+    {
+      "concept_id": "dynamics.mass_weight",
+      "name": "Mass and Weight",
+      "description": "Distinction between mass as a measure of inertia and weight as a gravitational force.",
+      "chapter": 5,
+      "section": "Mass and Weight",
+      "misconceptions": [
+        {
+          "misconception_id": "mass.weight_identical",
+          "description": "Treating mass and weight as the same physical quantity.",
+          "provenance": {
+            "source": "OpenStax University Physics Volume 1",
+            "type": "manual",
+            "reference": "Chapter 5"
+          }
+        }
+      ],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 5"
+      }
+    },
+
+    {
+      "concept_id": "dynamics.newtons_third_law",
+      "name": "Newton's Third Law",
+      "description": "Forces between interacting bodies occur in equal-magnitude and opposite-direction pairs.",
+      "chapter": 5,
+      "section": "Newton's Third Law",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 5"
+      }
+    },
+
+    {
+      "concept_id": "dynamics.free_body_diagrams",
+      "name": "Free-Body Diagrams",
+      "description": "Diagrams used to represent the forces acting on an object.",
+      "chapter": 5,
+      "section": "Forces and Free-Body Diagrams",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 5"
+      }
+    },
+
+    {
+      "concept_id": "applications.friction",
+      "name": "Friction",
+      "description": "A contact interaction that opposes relative motion or attempted relative motion between surfaces.",
+      "chapter": 6,
+      "section": "6.2 Friction",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 6"
+      }
+    },
+
+    {
+      "concept_id": "applications.centripetal_force",
+      "name": "Centripetal Force",
+      "description": "The net inward force associated with circular motion.",
+      "chapter": 6,
+      "section": "6.3 Centripetal Force",
+      "misconceptions": [
+        {
+          "misconception_id": "centripetal_force.additional_force",
+          "description": "Treating centripetal force as a separate fundamental force rather than the net inward force.",
+          "provenance": {
+            "source": "OpenStax University Physics Volume 1",
+            "type": "manual",
+            "reference": "Chapter 6"
+          }
+        }
+      ],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 6"
+      }
+    },
+
+    {
+      "concept_id": "energy.work",
+      "name": "Work",
+      "description": "Energy transfer associated with a force acting through a displacement.",
+      "chapter": 7,
+      "section": "7.1 Work",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 7"
+      }
+    },
+
+    {
+      "concept_id": "energy.kinetic_energy",
+      "name": "Kinetic Energy",
+      "description": "Energy associated with an object's motion.",
+      "chapter": 7,
+      "section": "7.2 Kinetic Energy",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 7"
+      }
+    },
+
+    {
+      "concept_id": "energy.work_energy_theorem",
+      "name": "Work-Energy Theorem",
+      "description": "The net work done on an object equals its change in kinetic energy.",
+      "chapter": 7,
+      "section": "7.3 Work-Energy Theorem",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 7"
+      }
+    },
+
+    {
+      "concept_id": "energy.power",
+      "name": "Power",
+      "description": "The rate at which work is done or energy is transferred.",
+      "chapter": 7,
+      "section": "7.4 Power",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 7"
+      }
+    },
+
+    {
+      "concept_id": "energy.potential_energy",
+      "name": "Potential Energy",
+      "description": "Energy associated with the configuration or position of a system.",
+      "chapter": 8,
+      "section": "Potential Energy",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 8"
+      }
+    },
+
+    {
+      "concept_id": "energy.conservation",
+      "name": "Conservation of Energy",
+      "description": "Energy can be transferred or transformed while the total energy of an isolated system remains constant.",
+      "chapter": 8,
+      "section": "Conservation of Energy",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 8"
+      }
+    },
+
+    {
+      "concept_id": "momentum.linear_momentum",
+      "name": "Linear Momentum",
+      "description": "A vector quantity associated with an object's mass and velocity.",
+      "chapter": 9,
+      "section": "9.1 Linear Momentum",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 9"
+      }
+    },
+
+    {
+      "concept_id": "momentum.impulse",
+      "name": "Impulse",
+      "description": "The change in momentum resulting from a force acting over a time interval.",
+      "chapter": 9,
+      "section": "9.2 Impulse and Collisions",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 9"
+      }
+    },
+
+    {
+      "concept_id": "momentum.collisions",
+      "name": "Collisions",
+      "description": "Interactions between objects involving momentum transfer.",
+      "chapter": 9,
+      "section": "9.2 Impulse and Collisions",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 9"
+      }
+    },
+
+    {
+      "concept_id": "momentum.conservation",
+      "name": "Conservation of Momentum",
+      "description": "Total momentum of an isolated system remains constant.",
+      "chapter": 9,
+      "section": "9.3 Conservation of Linear Momentum",
+      "misconceptions": [],
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "textbook",
+        "reference": "Chapter 9"
+      }
+    }
+  ],
+
+  "prerequisite_relations": [
+    {
+      "source_concept_id": "measurement.unit_conversion",
+      "prerequisite_concept_id": "measurement.units",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 1 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "measurement.dimensional_analysis",
+      "prerequisite_concept_id": "measurement.units",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 1 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "vectors.components",
+      "prerequisite_concept_id": "vectors.vectors",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 2 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "vectors.vector_algebra",
+      "prerequisite_concept_id": "vectors.components",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 2 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "kinematics.displacement",
+      "prerequisite_concept_id": "kinematics.position",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 3, Section 3.1"
+      }
+    },
+
+    {
+      "source_concept_id": "kinematics.velocity",
+      "prerequisite_concept_id": "kinematics.displacement",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 3 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "kinematics.acceleration",
+      "prerequisite_concept_id": "kinematics.velocity",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 3 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "kinematics.constant_acceleration",
+      "prerequisite_concept_id": "kinematics.acceleration",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 3 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "kinematics.free_fall",
+      "prerequisite_concept_id": "kinematics.constant_acceleration",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 3 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "kinematics.two_dimensional_motion",
+      "prerequisite_concept_id": "vectors.components",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 4 foundation"
+      }
+    },
+
+    {
+      "source_concept_id": "kinematics.two_dimensional_motion",
+      "prerequisite_concept_id": "kinematics.velocity",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 4 foundation"
+      }
+    },
+
+    {
+      "source_concept_id": "kinematics.projectile_motion",
+      "prerequisite_concept_id": "kinematics.two_dimensional_motion",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 4 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "dynamics.newtons_first_law",
+      "prerequisite_concept_id": "dynamics.force",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 5 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "dynamics.newtons_second_law",
+      "prerequisite_concept_id": "dynamics.newtons_first_law",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 5 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "dynamics.newtons_third_law",
+      "prerequisite_concept_id": "dynamics.newtons_second_law",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 5 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "dynamics.free_body_diagrams",
+      "prerequisite_concept_id": "dynamics.force",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 5"
+      }
+    },
+
+    {
+      "source_concept_id": "applications.friction",
+      "prerequisite_concept_id": "dynamics.free_body_diagrams",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 6"
+      }
+    },
+
+    {
+      "source_concept_id": "applications.centripetal_force",
+      "prerequisite_concept_id": "dynamics.newtons_second_law",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 6"
+      }
+    },
+
+    {
+      "source_concept_id": "energy.kinetic_energy",
+      "prerequisite_concept_id": "kinematics.velocity",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 7"
+      }
+    },
+
+    {
+      "source_concept_id": "energy.work_energy_theorem",
+      "prerequisite_concept_id": "energy.work",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 7 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "energy.work_energy_theorem",
+      "prerequisite_concept_id": "energy.kinetic_energy",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 7 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "energy.conservation",
+      "prerequisite_concept_id": "energy.potential_energy",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 8 progression"
+      }
+    },
+
+    {
+      "source_concept_id": "momentum.linear_momentum",
+      "prerequisite_concept_id": "kinematics.velocity",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 9"
+      }
+    },
+
+    {
+      "source_concept_id": "momentum.impulse",
+      "prerequisite_concept_id": "momentum.linear_momentum",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 9"
+      }
+    },
+
+    {
+      "source_concept_id": "momentum.collisions",
+      "prerequisite_concept_id": "momentum.linear_momentum",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 9"
+      }
+    },
+
+    {
+      "source_concept_id": "momentum.conservation",
+      "prerequisite_concept_id": "momentum.linear_momentum",
+      "relationship_type": "prerequisite",
+      "provenance": {
+        "source": "OpenStax University Physics Volume 1",
+        "type": "inferred",
+        "reference": "Chapter 9"
+      }
+    }
+  ]
+}

@@ -67,3 +67,71 @@ def apply_evidence(prior_mastery: float, evidence_type: str, evidence_strength: 
             "active": new_misconception_confidence >= 0.5,
         } if misconception_id else None),
     }
+
+async def process_student_response(
+    user_email: str,
+    subject: str,
+    student_response: str,
+    concept_id: str,
+    evidence_extractor,
+    ontology_retriever: OntologyRetriever | None = None,
+    interaction_id: Optional[str] = None,
+) -> dict[str, Any]:
+    """
+    Process a student response through the ontology-aware
+    knowledge-state pipeline.
+
+    Flow:
+
+        student response
+            ↓
+        ontology validation/context
+            ↓
+        evidence extraction
+            ↓
+        deterministic knowledge update
+            ↓
+        persisted state/history
+    """
+
+    retriever = ontology_retriever or OntologyRetriever()
+
+    concept = retriever.get_concept(concept_id)
+
+    if concept is None:
+        raise ValueError(
+            f"Unknown concept ID: {concept_id}"
+        )
+
+    concept_context = retriever.get_concept_context(
+        concept_id=concept_id,
+        include_prerequisites=True,
+    )
+
+    extraction: EvidenceExtractionResult = (
+        evidence_extractor.extract(
+            student_response=student_response,
+            concept_context=concept_context,
+            ontology_context=concept_context,
+        )
+    )
+
+    results = []
+
+    for evidence in extraction.evidence:
+        result = await process_extracted_evidence(
+            user_email=user_email,
+            subject=subject,
+            evidence=evidence,
+            interaction_id=interaction_id,
+        )
+
+        results.append(result)
+
+    return {
+        "student_response": student_response,
+        "concept_id": concept_id,
+        "concept_context": concept_context,
+        "evidence": extraction.evidence,
+        "results": results,
+    }

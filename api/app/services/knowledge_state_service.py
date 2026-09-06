@@ -9,7 +9,6 @@ from api.app.db import (
 from api.app.services.knowledge_inference import apply_evidence
 from api.app.services.evidence_extractor import Evidence
 
-
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
