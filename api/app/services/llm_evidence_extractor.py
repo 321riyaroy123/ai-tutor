@@ -1,6 +1,5 @@
 from api.app.services.evidence_extractor import EvidenceExtractionResult
 
-
 class LLMEvidenceExtractor:
     """
     Model-independent evidence extraction service.

@@ -19,6 +19,7 @@ def generate_answer(
     student_level: str = "intermediate",
     conversation_context: str = "",
     ontology_context: str = "",
+    student_knowledge_context: str = "",
     confidence_threshold: float = 0.3,
     followup_mode=None,
     use_flan_fallback: bool = False,
@@ -79,6 +80,7 @@ def generate_answer(
             student_level,
             conversation_context,
             ontology_context=ontology_context,
+            student_knowledge_context=student_knowledge_context,
             mode=mode,
         )
 
@@ -179,6 +181,7 @@ def generate_answer_v2(
     student_level: str = "intermediate",
     conversation_context: str = "",
     ontology_context: str = "",
+    student_knowledge_context: str = "",
     confidence_threshold: float = 0.3,
     followup_mode=None,
 ) -> Tuple[str, str, float]:
@@ -192,6 +195,7 @@ def generate_answer_v2(
         student_level=student_level,
         conversation_context=conversation_context,
         ontology_context=ontology_context,
+        student_knowledge_context=student_knowledge_context,
         confidence_threshold=confidence_threshold,
         followup_mode=followup_mode,
         use_flan_fallback=USE_FLAN_FALLBACK,

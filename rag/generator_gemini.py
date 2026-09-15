@@ -28,13 +28,22 @@ TOKEN_BUDGET = {
 }
 
 
-def generate_with_gemini(context, question, student_level,
-                         conversation_context="", mode="concept"):
+def generate_with_gemini(
+    context,
+    question,
+    student_level,
+    conversation_context="",
+    ontology_context="",
+    student_knowledge_context="",
+    mode="concept",
+):
     prompt = build_tutor_prompt(
-        context,
-        question,
-        student_level,
-        conversation_context,
+        context=context,
+        question=question,
+        student_level=student_level,
+        conversation_context=conversation_context,
+        ontology_context=ontology_context,
+        student_knowledge_context=student_knowledge_context,
         mode=mode,
     )
 

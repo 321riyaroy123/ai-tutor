@@ -1,5 +1,7 @@
 from datetime import datetime
 from time import perf_counter
+import logging
+logger = logging.getLogger(__name__)
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -12,6 +14,7 @@ from api.app.services.knowledge_pipeline import process_student_response
 from api.app.services.interaction_context import InteractionContextBuilder
 from api.app.services.llm_evidence_extractor import LLMEvidenceExtractor
 from api.app.services.evidence_generator import generate_evidence_with_gemini
+from api.app.services.tutor_knowledge_context import get_tutor_knowledge_context
 
 router = APIRouter(tags=["Tutor"])
 
@@ -19,9 +22,8 @@ VALID_SUBJECTS = {"physics", "math"}
 RETRIEVERS = {}
 INTERACTION_CONTEXT_BUILDERS = {}
 ONTOLOGY_RETRIEVER = OntologyRetriever()
-EVIDENCE_EXTRACTOR = LLMEvidenceExtractor(
-    generator=generate_evidence_with_gemini,
-)
+EVIDENCE_EXTRACTOR = LLMEvidenceExtractor(generator=generate_evidence_with_gemini)
+KNOWLEDGE_CONTEXT_CONFIDENCE_THRESHOLD = 0.5
 
 class EvaluateResponseRequest(BaseModel):
     chat_id: str
@@ -133,6 +135,41 @@ async def ask_tutor(
             question
         )
 
+    student_knowledge_context = ""
+
+    if (
+        interaction_context is not None
+        and interaction_context.concept_id
+    ):
+        classification_confidence = (
+            interaction_context.classification_confidence
+        )
+
+        if (
+            classification_confidence
+            >= KNOWLEDGE_CONTEXT_CONFIDENCE_THRESHOLD
+        ):
+            student_knowledge_context = (
+                await get_tutor_knowledge_context(
+                    user_email=current_user,
+                    subject=subject,
+                    concept_id=interaction_context.concept_id,
+                )
+            )
+
+            print(
+                f"[Knowledge Context] Using state for "
+                f"{interaction_context.concept_id} "
+                f"(confidence={classification_confidence:.2f})"
+            )
+
+        else:
+            print(
+                f"[Knowledge Context] Skipped due to low "
+                f"classification confidence "
+                f"({classification_confidence:.2f})"
+            )
+
     conversation_context = await _format_conversation_context(chat_id)
     
     try:
@@ -147,13 +184,20 @@ async def ask_tutor(
                 if interaction_context
                 else ""
             ),
+            student_knowledge_context=student_knowledge_context,
         )
     except Exception as error:
+        import traceback
+
+        print("\n===== ANSWER GENERATION ERROR =====")
+        print(traceback.format_exc())
+        print("===================================\n")
+
         raise HTTPException(
             status_code=500,
-            detail="Failed to generate tutor response",
+            detail=str(error),
         ) from error
-
+    
     latency_seconds = round(perf_counter() - start, 3)
 
     await add_to_history(chat_id, question, answer)

@@ -1,199 +1,177 @@
-# AI Tutor -- Agentic STEM Learning Assistant
+# AI Tutor
 
-## Overview
+AI Tutor is a full-stack STEM learning assistant for physics and mathematics. It combines retrieval-augmented generation (RAG), Gemini-powered tutoring, conversation memory, and learner-progress tracking to produce grounded explanations and worked solutions.
 
-AI Tutor is an intelligent learning assistant designed to help students
-understand STEM concepts through structured explanations and
-step-by-step reasoning.
+For physics, it also has an ontology-aware knowledge-state pipeline: it identifies the relevant concept, records evidence about understanding, and adapts later explanations using mastery estimates and active misconceptions.
 
-The system combines **Agentic AI**, **Retrieval Augmented Generation
-(RAG)**, and **context-aware dialogue** to provide reliable tutoring
-instead of simple answer generation.
+## Features
 
-The goal of the project is to create an AI system that explains concepts
-clearly, supports problem solving, and improves conceptual
-understanding.
+- Subject-specific RAG over physics and mathematics course material using FAISS indexes.
+- Gemini 2.5 Flash responses for concept explanations, single-problem solutions, detailed problem-set solutions, and final-answer-only follow-ups.
+- JWT authentication, session conversation memory, and MongoDB storage for users, chats, and progress.
+- Physics ontology classification with prerequisite-aware prompt context.
+- Gemini-assisted evidence extraction and persistent per-concept knowledge states: mastery, confidence, evidence count, and misconceptions.
+- Adaptive physics tutoring: when concept classification confidence is at least `0.5`, the tutor receives private pedagogical guidance derived from the learner's state.
+- React/Vite frontend with chat, progress views, and light/dark themes.
 
-------------------------------------------------------------------------
+## Architecture
 
-## Key Features
+```text
+React / Vite frontend
+        |
+        v
+FastAPI API + JWT authentication
+        |
+        +--> Subject RAG (FAISS + all-MiniLM-L6-v2) --> course-material context
+        +--> Conversation memory --> recent chat context
+        +--> Physics ontology --> concept and prerequisite context
+                    |
+                    +--> MongoDB knowledge state --> adaptive teaching guidance
+        |
+        v
+Gemini 2.5 Flash --> tutor response
+        |
+        v
+MongoDB --> users, chats, progress, knowledge evidence/history/state
+```
 
--   Step-by-step problem solving
--   Retrieval Augmented Generation (RAG) for contextual answers
--   Persistent chat history and conversation memory
--   PDF knowledge ingestion for study material
--   User authentication and session management
--   Modern dark-themed user interface
+## Technology
 
-------------------------------------------------------------------------
+| Area | Tools |
+| --- | --- |
+| API | FastAPI, Uvicorn, Pydantic |
+| Frontend | React 18, Vite, TypeScript, Axios, Tailwind CSS |
+| Generation | Google Gemini 2.5 Flash |
+| Retrieval | FAISS, Sentence Transformers (`all-MiniLM-L6-v2`) |
+| Storage | MongoDB via Motor |
+| Ingestion | PyPDF, pdfplumber, PyMuPDF, Tesseract-compatible tooling |
+| Testing | pytest, pytest-asyncio |
 
-## System Architecture
+## Project layout
 
-User Interface (React) 
-      ↓ 
-REST API (FastAPI Backend) 
-      ↓ 
-RAG Pipeline
-(Document Retrieval + Context Construction) 
-      ↓ 
-AI Model
-(Transformer-based reasoning) 
-      ↓ 
-MongoDB Database (Users, Chats, Progress)
+```text
+api/app/                 FastAPI routes, database access, ontology, and services
+ai-tutor-frontend/       React/Vite application
+rag/                     Index building, retrieval, generation, prompts, and memory
+data/                    Source textbooks and extracted text (local, ignored)
+embeddings/              Generated FAISS indexes and chunk metadata (local, ignored)
+tests/                   Backend and adaptive-tutoring test suite
+```
 
-Workflow: 
-1. User submits a question through the web interface 
-2. Backend receives the request via FastAPI 
-3. Relevant knowledge is retrieved using the RAG pipeline 
-4. The AI model generates a structured response 
-5. The answer is returned to the frontend and stored in the database
+## Requirements
 
-------------------------------------------------------------------------
+- Python 3.10+
+- Node.js 18+
+- A MongoDB instance
+- A Google AI API key with Gemini access
+- Physics and/or mathematics source material if local indexes need to be built
 
-## Tech Stack
+## Setup
 
-### Backend
+### 1. Configure environment variables
 
--   FastAPI
--   Python
--   Uvicorn
--   PyPDF2
--   HuggingFace Transformers
--   PyTorch
--   python-dotenv
+Create a `.env` file in the repository root:
 
-### Frontend
+```env
+MONGO_URL=mongodb+srv://<user>:<password>@<cluster>/<database>?retryWrites=true&w=majority
+GOOGLE_API_KEY=<your-google-ai-api-key>
+# Optional: permits a deployed frontend in addition to http://localhost:5173
+FRONTEND_URL=http://localhost:5173
+```
 
--   ReactJS
--   Axios
--   CSS (Dark UI theme)
+`MONGO_URL` and `GOOGLE_API_KEY` are required when the API starts.
 
-### Database
+### 2. Install and run the backend
 
--   MongoDB Atlas
-
-------------------------------------------------------------------------
-
-## Current Implementation Progress
-
-### Authentication System
-
--   User registration
--   Login functionality
--   JWT-based authentication
-
-### Chat System
-
--   AI tutor chat interface
--   Persistent conversation storage
--   Context-aware responses
-
-### Retrieval Augmented Generation (RAG)
-
--   PDF document ingestion
--   Knowledge extraction
--   Context retrieval for responses
-
-### AI Response System
-
--   Transformer model integration
--   Structured reasoning-based responses
-
-### Frontend Interface
-
--   Light and dark themed UI
--   Chat interface connected to backend APIs
-
-------------------------------------------------------------------------
-
-## Project Structure
-
-project-root 
-│ ├── api 
-  │ └── app 
-  │ ├── main.py 
-  │ ├── db.py 
-  │ ├──dependencies.py 
-│ ├── models 
-  │ └── routes 
-  │ ├── rag 
-  │ ├── memory 
-  │ ├── retriever 
-  │ └── embeddings 
-│ ├── frontend 
-  │ ├── src 
-  │ ├── components 
-  │ └── pages 
-│ ├── requirements.txt 
-├── .env 
-└── README.md
-
-------------------------------------------------------------------------
-
-## Installation
-
-### Clone the Repository
-
-git clone https://github.com/321riyaroy123/ai-tutor.git 
-cd ai-tutor
- 
-### Backend Setup
-
-pip install -r requirements.txt 
+```bash
+python -m venv .venv
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 uvicorn api.app.main:app --reload
+```
 
-Backend runs on: http://localhost:8000
+The API runs at `http://localhost:8000`; interactive documentation is available at `/docs`.
 
-### Frontend Setup
+### 3. Build retrieval indexes
 
-cd frontend 
-npm install 
-npm start
+On a first run, or after changing textbooks, put source files in the expected `data/openstax/` locations and call:
 
-Frontend runs on: http://localhost:3000
+```bash
+curl -X POST http://localhost:8000/ingest/
+```
 
-------------------------------------------------------------------------
+This creates `embeddings/<subject>_index.faiss` and `embeddings/<subject>_chunks.pkl`. Check availability with `GET /ingest/status`.
 
-## API Endpoints
+### 4. Start the frontend
 
-  Endpoint    Method   Description
-  ----------- -------- ------------------------------
-  /register   POST     Register a new user
-  /login      POST     User authentication
-  /chat       POST     Send question to AI tutor
-  /history    GET      Retrieve chat history
-  /progress   GET      Fetch user learning progress
+```bash
+cd ai-tutor-frontend
+npm install
+npm run dev
+```
 
-------------------------------------------------------------------------
+Vite normally serves the frontend at `http://localhost:5173`.
 
-## Future Improvements
+## API overview
 
--   Improved reasoning agents
--   Multi-document retrieval for RAG
--   Mathematical expression rendering
--   Voice-based tutoring interaction
--   Adaptive difficulty based on learner progress
--   Knowledge graph integration
+Authenticated endpoints require `Authorization: Bearer <access_token>`.
 
-------------------------------------------------------------------------
+| Endpoint | Method | Purpose |
+| --- | --- | --- |
+| `/` | `GET` | Health/status response |
+| `/register` | `POST` | Create a user account |
+| `/login` | `POST` | Sign in and receive a JWT |
+| `/ask` | `POST` | Ask the tutor a physics or math question |
+| `/tutor/` | `POST` | Legacy alias for `/ask` |
+| `/progress` | `GET` | Retrieve learning-progress summary |
+| `/ingest/` | `POST` | Extract source material and build FAISS indexes |
+| `/ingest/status` | `GET` | Check index readiness |
+| `/knowledge/evaluate` | `POST` | Evaluate a physics response for an ontology concept |
+| `/evaluate-response` | `POST` | Legacy knowledge-evaluation route |
 
-## Research Focus
+Example tutor request:
 
-This project explores the integration of **Agentic AI + Retrieval
-Augmented Generation for educational tutoring systems**.
+```json
+{
+  "user_id": "chat-session-001",
+  "question": "Why does an object keep moving when no force acts on it?",
+  "subject": "physics",
+  "student_level": "intermediate"
+}
+```
 
-The aim is to build AI tutors that prioritize reasoning, explanation,
-and conceptual clarity rather than only generating answers.
+Example physics knowledge-evaluation request:
 
-------------------------------------------------------------------------
+```json
+{
+  "subject": "physics",
+  "concept_id": "newtons_first_law",
+  "student_response": "An object keeps moving because it has inertia.",
+  "interaction_id": "chat-session-001"
+}
+```
 
-## Author
+## Adaptive tutoring flow
 
-Riya Roy\
-Artificial Intelligence and Machine Learning
+1. The tutor retrieves relevant course material and recent chat history.
+2. For physics, it classifies the message against the ontology and gathers concept and prerequisite context.
+3. When classification confidence is at least `0.5`, it reads the learner's saved state for that concept and converts it into teaching guidance.
+4. Gemini receives the retrieved material and guidance to tailor its explanation. Internal mastery values, confidence scores, concept IDs, and system details are not shown to the student.
+5. A student response submitted to `/knowledge/evaluate` is converted to evidence and used to update persistent knowledge state.
 
-------------------------------------------------------------------------
+Physics is currently the only subject with ontology-driven knowledge evaluation and adaptation. Mathematics is supported by the RAG tutoring pipeline but does not yet have the same knowledge-state layer.
+
+## Tests
+
+Run the backend test suite from the repository root:
+
+```bash
+pytest
+```
+
+The suite covers prompt modes, ontology classification/context, knowledge-state inference and retrieval, evidence extraction, and adaptive tutoring integration.
 
 ## License
 
-This project is developed for academic and research purposes.
+This project is intended for academic and research use.

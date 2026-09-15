@@ -1,5 +1,12 @@
-def build_tutor_prompt(context, question, student_level="intermediate",
-                       conversation_context="", mode="concept"):
+def build_tutor_prompt(
+    context,
+    question,
+    student_level="intermediate",
+    conversation_context="",
+    ontology_context="",
+    student_knowledge_context="",
+    mode="concept",
+):
     # Final-answers-only follow-up.
     if mode == "followup_answers":
         return f"""
@@ -20,7 +27,6 @@ Practice set:
 Final answers:
 """
 
-    # Detailed step-by-step follow-up.
     if mode == "detailed_solver":
         return f"""
 You are a mathematics/physics tutor providing fully worked solutions.
@@ -32,16 +38,19 @@ STRICT RULES:
 - End each solution with a clearly labelled final answer.
 - Use $...$ for inline math and $$...$$ for display equations.
 - If a problem set is long, still complete ALL problems - do not stop early.
+- Adapt the amount of scaffolding and explanation to the student's demonstrated knowledge.
+- Do not mention internal mastery scores, confidence scores, ontology IDs, or knowledge-state systems.
 
 Practice set:
 {context}
 
 Student level: {student_level}
 
+{f"Student learning context:{chr(10)}{student_knowledge_context.strip()}" if student_knowledge_context.strip() else ""}
+
 Fully worked solutions:
 """
 
-    # Direct single-problem solver.
     if mode == "solver":
         return f"""
 You are a mathematics/physics tutor.
@@ -53,6 +62,10 @@ RULES:
 - State what you are doing at each step.
 - Compute fully to a final answer - do not leave it partially evaluated.
 - Use $...$ for inline math and $$...$$ for final standalone equations.
+- Adapt the amount of explanation and scaffolding to the student's demonstrated knowledge.
+- Do not mention internal mastery scores, confidence scores, ontology IDs, or knowledge-state systems.
+
+{f"Student learning context:{chr(10)}{student_knowledge_context.strip()}" if student_knowledge_context.strip() else ""}
 
 Problem:
 {question}
@@ -60,19 +73,27 @@ Problem:
 Solution:
 """
 
-    # Default concept / explanation mode.
     return f"""
 You are an expert AI tutor in physics and mathematics.
 
 RULES:
 - Explain clearly for a {student_level}-level student.
+- Adapt your explanation based on the student's demonstrated knowledge.
+- If the student has a misconception, directly address and correct it.
+- If the student has low mastery, explain the concept more carefully and build from fundamentals.
+- If the student has high mastery, avoid unnecessary repetition and provide deeper insight.
+- Do not mention internal mastery scores, confidence scores, ontology IDs, or knowledge-state systems.
 - Include worked examples where helpful.
 - If the question asks for practice problems, generate a well-varied numbered set.
 - If the question is directly solvable, solve it step by step.
 - Use $...$ for inline math and $$...$$ for display equations.
-- Complete your response fully - do not stop mid-explanation.
+- Complete your response fully.
 
 {f"Recent conversation:{chr(10)}{conversation_context.strip()}" if conversation_context.strip() else ""}
+
+{f"Relevant concept structure:{chr(10)}{ontology_context.strip()}" if ontology_context.strip() else ""}
+
+{f"Student learning context:{chr(10)}{student_knowledge_context.strip()}" if student_knowledge_context.strip() else ""}
 
 Course material context:
 {context}
@@ -106,7 +127,6 @@ IMPORTANT RULES:
 
 Allowed evidence_type values:
 - correct
-- partial
 - incorrect
 - uncertain
 - misconception
