@@ -11,7 +11,7 @@ For physics, it also has an ontology-aware knowledge-state pipeline: it identifi
 - JWT authentication, session conversation memory, and MongoDB storage for users, chats, and progress.
 - Physics ontology classification with prerequisite-aware prompt context.
 - Gemini-assisted evidence extraction and persistent per-concept knowledge states: mastery, confidence, evidence count, and misconceptions.
-- Adaptive physics tutoring: when concept classification confidence is at least `0.5`, the tutor receives private pedagogical guidance derived from the learner's state.
+- Policy-driven adaptive physics tutoring: when concept classification confidence is at least `0.5`, a deterministic policy turns the learner's state into a difficulty, explanation-depth, content, and guidance strategy for Gemini.
 - React/Vite frontend with chat, progress views, and light/dark themes.
 
 ## Architecture
@@ -156,11 +156,26 @@ Example physics knowledge-evaluation request:
 
 1. The tutor retrieves relevant course material and recent chat history.
 2. For physics, it classifies the message against the ontology and gathers concept and prerequisite context.
-3. When classification confidence is at least `0.5`, it reads the learner's saved state for that concept and converts it into teaching guidance.
+3. When classification confidence is at least `0.5`, it reads the learner's saved state for that concept and applies a deterministic adaptive-tutoring policy.
 4. Gemini receives the retrieved material and guidance to tailor its explanation. Internal mastery values, confidence scores, concept IDs, and system details are not shown to the student.
 5. A student response submitted to `/knowledge/evaluate` is converted to evidence and used to update persistent knowledge state.
 
 Physics is currently the only subject with ontology-driven knowledge evaluation and adaptation. Mathematics is supported by the RAG tutoring pipeline but does not yet have the same knowledge-state layer.
+
+## Adaptive tutoring policy
+
+The policy is deterministic and evaluated in this priority order, so an active misconception always overrides a high mastery estimate:
+
+| Condition | Difficulty | Explanation depth | Teaching strategy |
+| --- | --- | --- | --- |
+| Active misconception | Remedial | Deep | Correct the misconception directly |
+| Confidence below `0.30` | Diagnostic | Moderate | Assess understanding with diagnostic examples |
+| Mastery below `0.30` | Foundational | Deep | Build from prerequisites and intuition |
+| Mastery below `0.55` | Basic | Moderate | Clarify gaps with guided practice |
+| Mastery below `0.75` | Intermediate | Moderate | Encourage independent multi-step reasoning |
+| Mastery of `0.75` or greater | Advanced | Concise | Use transfer tasks, edge cases, and challenges |
+
+The resulting policy and identified misconceptions are supplied only as tutor context; student-facing responses do not expose internal learner-model data.
 
 ## Tests
 
@@ -170,7 +185,7 @@ Run the backend test suite from the repository root:
 pytest
 ```
 
-The suite covers prompt modes, ontology classification/context, knowledge-state inference and retrieval, evidence extraction, and adaptive tutoring integration.
+The suite covers prompt modes, ontology classification/context, knowledge-state inference and retrieval, evidence extraction, adaptive-policy selection, and end-to-end adaptive tutoring integration.
 
 ## License
 
